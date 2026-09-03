@@ -1,0 +1,74 @@
+"use client";
+
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { analyzePrompt, type PrivacyAnalysis } from "@/lib/privacy";
+import { createVault, deleteSession, hasVault, loadSession, saveSession, unlockVault } from "@/lib/vault";
+
+type Message = { id: string; role: "user" | "assistant"; text: string; protectedText?: string };
+type Mode = "balanced" | "strict";
+const ACTIVE_SESSION = "sycrely.active-session";
+
+function Shield({ small = false }: { small?: boolean }) {
+  return <span className={small ? "shield small" : "shield"} aria-hidden="true">S</span>;
+}
+
+function LockScreen({ setup, onReady }: { setup: boolean; onReady: (key: CryptoKey) => void }) {
+  const [pin, setPin] = useState(""); const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState(""); const [busy, setBusy] = useState(false);
+  async function submit(event: FormEvent) {
+    event.preventDefault(); setError("");
+    if (pin.length < 6) return setError("Use at least 6 characters.");
+    if (setup && pin !== confirm) return setError("The two entries do not match.");
+    setBusy(true);
+    try { onReady(setup ? await createVault(pin) : await unlockVault(pin)); }
+    catch { setError("That unlock phrase did not work."); setBusy(false); }
+  }
+  return <main className="lock-page"><section className="lock-card">
+    <div className="brand"><Shield /><span>Sycrely</span></div><p className="eyebrow">PRIVATE BY DESIGN</p>
+    <h1>{setup ? "Create your local vault" : "Unlock your private session"}</h1>
+    <p className="lede">{setup ? "Your conversations will be encrypted before they are saved in this browser." : "Your session is still here. Sycrely needs your local unlock phrase to read it."}</p>
+    <form onSubmit={submit}><label>Local unlock phrase<input autoFocus type="password" value={pin} onChange={e=>setPin(e.target.value)} autoComplete={setup ? "new-password" : "current-password"} /></label>
+      {setup && <label>Confirm phrase<input type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} autoComplete="new-password" /></label>}
+      {error && <p className="form-error" role="alert">{error}</p>}<button className="primary wide" disabled={busy}>{busy ? "Preparing vault..." : setup ? "Create private vault" : "Unlock session"}</button>
+    </form><p className="fine-print">Sycrely does not send this phrase to a server. If you forget it, this prototype cannot recover your encrypted conversation.</p>
+  </section></main>;
+}
+
+function ReviewModal({ analysis, onCancel, onSend }: { analysis: PrivacyAnalysis; onCancel: () => void; onSend: () => void }) {
+  return <div className="modal-backdrop"><section className="modal" role="dialog" aria-modal="true" aria-labelledby="review-title">
+    <div className="modal-title-row"><div className="risk-icon">!</div><div><p className="eyebrow danger">HIGH SENSITIVITY DETECTED</p><h2 id="review-title">Review before anything leaves</h2></div></div>
+    <p className="muted">Sycrely found information that could expose a secret or identify someone. The original stays in your encrypted local vault.</p>
+    <div className="finding-list">{analysis.findings.map((finding,index)=><span key={`${finding.category}-${index}`}>{finding.label}</span>)}</div>
+    <div className="preview-block"><div className="preview-label"><span>Provider-bound version</span><span className="safe-chip">Protected</span></div><p>{analysis.protectedText}</p></div>
+    <details><summary>What changed?</summary><ul>{analysis.changes.map(change=><li key={change}>{change}</li>)}</ul></details>
+    <div className="modal-actions"><button className="secondary" onClick={onCancel}>Go back and edit</button><button className="primary" onClick={onSend}>Send protected version</button></div>
+  </section></div>;
+}
+
+function EndSessionModal({ onClose, onSave, onDelete }: { onClose:()=>void; onSave:()=>void; onDelete:()=>void }) {
+  return <div className="modal-backdrop"><section className="modal compact" role="dialog" aria-modal="true"><p className="eyebrow">END PRIVATE SESSION</p><h2>Save it or delete it?</h2><p className="muted">Saving keeps an encrypted copy in this browser. Deleting destroys the local session record.</p><div className="choice-grid"><button className="choice" onClick={onSave}><strong>Save encrypted</strong><span>Return to it later on this browser.</span></button><button className="choice destructive" onClick={onDelete}><strong>Delete now</strong><span>Remove messages and their encrypted record.</span></button></div><button className="text-button" onClick={onClose}>Continue conversation</button></section></div>;
+}
+
+export default function Home() {
+  const [booted,setBooted]=useState(false); const [needsSetup,setNeedsSetup]=useState(false); const [key,setKey]=useState<CryptoKey|null>(null);
+  const [sessionId,setSessionId]=useState(""); const [messages,setMessages]=useState<Message[]>([]); const [draft,setDraft]=useState(""); const [mode,setMode]=useState<Mode>("balanced");
+  const [analysis,setAnalysis]=useState<PrivacyAnalysis|null>(null); const [sending,setSending]=useState(false); const [showTrace,setShowTrace]=useState(false); const [ending,setEnding]=useState(false); const [saved,setSaved]=useState(false);
+  const endRef=useRef<HTMLDivElement>(null);
+  useEffect(()=>{hasVault().then(value=>{setNeedsSetup(!value);setBooted(true);});},[]);
+  useEffect(()=>{endRef.current?.scrollIntoView({behavior:"smooth"});},[messages,sending]);
+  useEffect(()=>{if(!key)return;const existing=localStorage.getItem(ACTIVE_SESSION)||crypto.randomUUID();localStorage.setItem(ACTIVE_SESSION,existing);queueMicrotask(()=>setSessionId(existing));loadSession(key,existing).then(session=>{if(session){setMessages(session.messages as Message[]);setMode(session.mode);}}).catch(()=>{});},[key]);
+  useEffect(()=>{if(!key||!sessionId)return;const timer=setTimeout(()=>saveSession(key,{id:sessionId,updatedAt:Date.now(),mode,messages}).then(()=>setSaved(true)),250);return()=>clearTimeout(timer);},[key,sessionId,messages,mode]);
+  const latestProtected=useMemo(()=>[...messages].reverse().find(m=>m.role==="user"&&m.protectedText),[messages]);
+  async function beginSend(event?:FormEvent){event?.preventDefault();if(!draft.trim()||sending)return;const result=analyzePrompt(draft.trim(),mode);if(result.risk==="high"||result.risk==="critical"){setAnalysis(result);return;}await send(result);}
+  async function send(result:PrivacyAnalysis){setAnalysis(null);const original=draft.trim();setDraft("");setMessages(v=>[...v,{id:crypto.randomUUID(),role:"user",text:original,protectedText:result.protectedText}]);setSending(true);try{const response=await fetch('/api/inference',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({taskCapsule:{messages:[{role:'user',content:result.protectedText}]},privacyMode:mode,residualRisk:{band:result.risk,categories:result.findings.map(f=>f.category)}})});if(!response.ok)throw new Error('Request failed');const data=await response.json();const id=crypto.randomUUID();setMessages(v=>[...v,{id,role:'assistant',text:""}]);for(const word of String(data.message).split(' ')){await new Promise(r=>setTimeout(r,28));setMessages(v=>v.map(m=>m.id===id?{...m,text:(m.text+" "+word).trim()}:m));}}catch{setMessages(v=>[...v,{id:crypto.randomUUID(),role:'assistant',text:'The protected mock request could not be completed. Your original message remained in the local vault.'}]);}finally{setSending(false);}}
+  async function remove(){if(sessionId)await deleteSession(sessionId);localStorage.removeItem(ACTIVE_SESSION);setMessages([]);const id=crypto.randomUUID();localStorage.setItem(ACTIVE_SESSION,id);setSessionId(id);setEnding(false);setSaved(false);}
+  async function saveAndLock(){if(key&&sessionId)await saveSession(key,{id:sessionId,updatedAt:Date.now(),mode,messages});setEnding(false);setKey(null);}
+  if(!booted)return <main className="splash"><div className="brand"><Shield/><span>Sycrely</span></div></main>;
+  if(!key)return <LockScreen setup={needsSetup} onReady={value=>{setKey(value);setNeedsSetup(false);}}/>;
+  return <main className="app-shell"><aside className="sidebar"><div className="brand"><Shield/><span>Sycrely</span></div><button className="new-chat" onClick={()=>{setMessages([]);const id=crypto.randomUUID();localStorage.setItem(ACTIVE_SESSION,id);setSessionId(id);}}>+ New private session</button><div className="side-section"><p>ACTIVE SESSION</p><button className="session-item"><span className="session-dot"></span><span><strong>{messages.length?"Private research":"Untitled session"}</strong><small>{saved?"Encrypted locally":"Saving locally..."}</small></span></button></div><div className="side-bottom"><button onClick={()=>setShowTrace(true)}>Privacy trace</button><button onClick={()=>setKey(null)}>Lock vault</button></div></aside>
+    <section className="chat-panel"><header className="topbar"><div><p className="eyebrow">PRIVATE SESSION</p><h1>{messages.length?"Private research":"New conversation"}</h1></div><div className="top-actions"><div className="privacy-pill"><span className="pulse"></span>Private Mode <b>On</b></div><button className="end-button" onClick={()=>setEnding(true)}>End session</button></div></header>
+      <div className="chat-scroll">{!messages.length?<section className="empty-state"><div className="hero-shield"><Shield/></div><p className="eyebrow">YOUR CONTEXT STAYS YOURS</p><h2>What would you like to explore privately?</h2><p>Write naturally. Sycrely will check for sensitive context on this device and show you exactly what is safe to send.</p><div className="promise-row"><span>Local detection</span><span>Protected preview</span><span>Encrypted session</span></div></section>:<div className="messages">{messages.map(message=><article key={message.id} className={`message ${message.role}`}><div className="avatar">{message.role==='user'?'You':'S'}</div><div><p className="message-label">{message.role==='user'?'You - local original':'Sycrely - mock protected response'}</p><div className="bubble">{message.text||<span className="typing">Thinking securely...</span>}</div>{message.role==='user'&&<button className="trace-link" onClick={()=>setShowTrace(true)}>Protected before sending</button>}</div></article>)}<div ref={endRef}/></div>}</div>
+      <form className="composer" onSubmit={beginSend}><div className="mode-row"><button type="button" className={mode==='balanced'?'active':''} onClick={()=>setMode('balanced')}>Balanced</button><button type="button" className={mode==='strict'?'active':''} onClick={()=>setMode('strict')}>Strict</button><span><Shield small/> Analysis runs on this device</span></div><div className="input-wrap"><textarea aria-label="Private message" placeholder="Ask anything. Sensitive context will be protected before sending..." value={draft} onChange={e=>setDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();beginSend();}}}/><button className="send-button" disabled={!draft.trim()||sending} aria-label="Send">↑</button></div><p className="composer-note">The original is encrypted locally. External AI receives only the protected version.</p></form></section>
+    <aside className={`trace-panel ${showTrace?'open':''}`}><button className="trace-close" onClick={()=>setShowTrace(false)}>×</button><p className="eyebrow">PRIVACY TRACE</p><h2>What left this device?</h2>{latestProtected?<><div className="trace-safe">Protected request sent</div><p className="trace-copy">{latestProtected.protectedText}</p><div className="trace-list"><span><b>Original</b> Encrypted locally</span><span><b>Destination</b> Mock Sycrely API</span><span><b>Storage</b> No server conversation record</span></div></>:<p className="muted">Nothing has been sent in this session yet.</p>}</aside>
+    {analysis&&<ReviewModal analysis={analysis} onCancel={()=>setAnalysis(null)} onSend={()=>send(analysis)}/>} {ending&&<EndSessionModal onClose={()=>setEnding(false)} onSave={saveAndLock} onDelete={remove}/>}</main>;
+}

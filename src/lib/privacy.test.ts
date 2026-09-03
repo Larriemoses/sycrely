@@ -1,0 +1,5 @@
+import test from "node:test";import assert from "node:assert/strict";import{analyzePrompt}from"./privacy.ts";
+test("removes credentials and marks critical risk",()=>{const result=analyzePrompt("My API key: sk-example-secret-123456789");assert.equal(result.risk,"critical");assert.equal(result.protectedText.includes("sk-example"),false);});
+test("pauses confidential product ideas",()=>{const result=analyzePrompt("This is my confidential product idea for a new market");assert.equal(result.risk,"high");assert.match(result.protectedText,/protected concept/i);});
+test("redacts a named identity without consuming nearby words",()=>{const result=analyzePrompt("My name is Ada Lovelace and this is my confidential product idea.");assert.match(result.protectedText,/my name is \[PERSON_1\] and/i);assert.doesNotMatch(result.protectedText,/Ada Lovelace/);assert.match(result.protectedText,/my protected concept/i);});
+test("leaves a public question usable",()=>{const result=analyzePrompt("Explain how photosynthesis works");assert.equal(result.risk,"low");assert.equal(result.protectedText,"Explain how photosynthesis works");});
