@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sycrely
 
-## Getting Started
+**Powerful AI. Private by design.**
 
-First, run the development server:
+Sycrely is a privacy-first AI gateway that helps people use frontier AI models without sending unnecessary personal, confidential, or identifying context to the model provider.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This repository contains the first mobile-first web prototype. It demonstrates the core privacy boundary before OpenRouter or another production inference provider is connected.
+
+## How it works
+
+1. The user writes normally inside Sycrely.
+2. The local privacy engine checks the prompt on the device.
+3. Sensitive details are removed, replaced with placeholders, or generalized.
+4. High-risk requests pause for review and show the exact provider-bound text.
+5. Only the protected task is sent through the inference boundary.
+6. The original conversation remains encrypted in the browser.
+
+The provider does **not** receive the user's local placeholder map or original prompt. Sycrely does not claim impossible end-to-end encrypted inference: an external model must be able to read the protected prompt it receives.
+
+## Current prototype
+
+- Local vault creation and unlocking
+- AES-GCM encrypted browser persistence
+- PBKDF2-based local key derivation
+- Balanced and Strict privacy modes
+- Local detection of email addresses, phone numbers, named identities, credentials, payment-card patterns, and confidential intent
+- Mandatory preview for high-sensitivity prompts
+- Exact provider-bound prompt display
+- Privacy trace showing what crossed the boundary
+- Save-encrypted and delete-now session endings
+- Responsive desktop and mobile-browser interface
+- A mock inference route that rejects forbidden original-data fields
+
+The mock response is deliberate. OpenRouter will be integrated after the provider boundary, secret handling, quotas, and model policy are ready.
+
+## Architecture boundary
+
+```text
+Original prompt
+     |
+     v
+Local detection and transformation
+     |
+     +--> encrypted original + placeholder map remain local
+     |
+     v
+Protected task capsule
+     |
+     v
+Sycrely inference endpoint
+     |
+     v
+External model provider (next phase)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The production privacy engine is planned as a hybrid of deterministic detectors, a compact on-device semantic classifier, and a policy engine. The current prototype implements the deterministic layer and the safety boundary.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Run locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Requirements: Node.js 20+ and pnpm.
 
-## Learn More
+```bash
+pnpm install
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Verification
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm test
+pnpm lint
+pnpm build
+```
 
-## Deploy on Vercel
+## Next milestones
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Structured task-capsule schema and local alias map
+2. Broader sensitive-context detectors and adversarial privacy tests
+3. Compact on-device semantic classification
+4. OpenRouter integration with server-side secret isolation
+5. Usage accounting, model policy, rate limits, and managed credits
+6. Grounded answer verification and uncertainty indicators
+7. Installable PWA and expanded accessibility testing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Status
+
+Early private prototype. Do not use it yet for production secrets, regulated information, or safety-critical decisions.
