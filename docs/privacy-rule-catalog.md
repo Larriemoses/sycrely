@@ -57,6 +57,8 @@ This catalogue is the explainable rule-based baseline for Sycrely's local privac
 
 Patterns cannot reliably understand every name, place, spelling error, implied relationship or novel confidential idea. Rule matches may be false positives or false negatives. The review screen and future on-device semantic model are necessary layers, not optional polish.
 
+The current automated baseline is the [100-prompt Privacy Benchmark](100-prompt-privacy-benchmark.md). Passing this synthetic benchmark confirms the listed cases and expected transformations; it does not establish perfect detection in unrestricted real-world language.
+
 ## Research basis
 
 - [Microsoft Presidio supported entities](https://microsoft.github.io/presidio/supported_entities/) documents a hybrid approach using patterns, checksums, context and named-entity recognition.

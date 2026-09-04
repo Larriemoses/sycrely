@@ -29,16 +29,16 @@ const detectors: Detector[] = [
   { category: "credential", label: "Credential or secret key", severity: "critical", regex: /\b(?:sk-[a-z0-9_-]{12,}|api[_ -]?key\s*[:=]\s*\S+|password\s*[:=]\s*\S+)\b/gi, token: "CREDENTIAL_REMOVED" },
   { category: "email", label: "Email address", severity: "high", regex: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, token: "EMAIL", restorable: true },
   { category: "network", label: "IP address", severity: "high", regex: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g, token: "IP_ADDRESS", restorable: true },
-  { category: "phone", label: "Phone number", severity: "high", regex: /(?<!\w)(?:\+?\d[\d\s().-]{8,}\d)(?!\w)/g, token: "PHONE", restorable: true },
   { category: "identity", label: "Named identity", severity: "high", regex: /\b([Mm]y [Nn]ame [Ii]s)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})/g, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "identity", label: "Named identity", severity: "high", regex: /\b(I(?:['’]m| am)|[Cc]all me)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})/g, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
-  { category: "identity", label: "Named identity", severity: "high", regex: /\b((?:Mr|mr|Mrs|mrs|Ms|ms|Miss|miss|Dr|dr|Prof|prof)\.?)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})/g, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
+  { category: "identity", label: "Named identity", severity: "high", regex: /\b((?:Mr|mr|Mrs|mrs|Ms|ms|Miss|miss|Dr|dr|Prof|prof|Chief|chief|Barrister|barrister|Engr|engr|Pastor|pastor|Imam|imam)\.?)\s+(\p{Lu}[\p{L}\p{M}'’-]+(?:\s+\p{Lu}[\p{L}\p{M}'’-]+){0,2})/gu, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "organization", label: "Private organization name", severity: "high", regex: /\b([Mm]y (?:company|startup|business|employer) is)\s+([A-Z][\w&.-]+(?:\s+[A-Z][\w&.-]+){0,3})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "organization", label: "Private organization name", severity: "high", regex: /\b(owns|founded|runs|leads)\s+([A-Z][\w&'-]*(?:\s+[A-Z][\w&'-]*){0,5})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "location", label: "Named location", severity: "high", regex: /\b((?:company|office|workplace|business|employer)\s+(?:which\s+)?is\s+located\s+in|(?:company|office|workplace|business|employer)\s+(?:which\s+)?is\s+Located\s+in)\s+([A-Z][\w'.-]+(?:\s+[A-Z][\w'.-]+){0,2}(?:,\s*[A-Z][\w'.-]+(?:\s+[A-Z][\w'.-]+){0,2})?)/g, token: "LOCATION", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "address", label: "Street address", severity: "high", regex: /\b\d{1,6}\s+(?:[A-Z][\w.-]+\s+){0,4}(?:Street|St|Road|Rd|Avenue|Ave|Lane|Ln|Drive|Dr|Boulevard|Blvd)\b/gi, token: "ADDRESS", restorable: true },
   { category: "government-id", label: "Government identifier", severity: "critical", regex: /\b(?:SSN|NIN|passport(?: number)?|national id)\s*[:#-]?\s*[A-Z0-9-]{5,}\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED" },
-  { category: "finance", label: "Payment card pattern", severity: "critical", regex: /\b(?:\d[ -]*?){13,19}\b/g, token: "FINANCIAL_IDENTIFIER_REMOVED" },
+  { category: "finance", label: "Payment card pattern", severity: "critical", regex: /\b(?:4(?:[ -]*\d){15}|5[1-5](?:[ -]*\d){14})\b/g, token: "FINANCIAL_IDENTIFIER_REMOVED" },
+  { category: "phone", label: "Phone number", severity: "high", regex: /(?<!\w)(?:\+?\d[\d\s().-]{8,}\d)(?!\w)/g, token: "PHONE", restorable: true },
 ];
 
 const personalSupport = /\b(therapy|therapist|counsell?ing|emotional support|mental health|anxiety|depression|grief|trauma|what i(?:'m| am) facing)\b/i;
