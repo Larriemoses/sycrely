@@ -51,5 +51,5 @@ test("removes organization, address, and network identifiers", () => {
 test("flags sensitive meaning even without a direct identifier", () => {
   const result = analyzePrompt("Help me understand my medical record and test result");
   assert.equal(result.risk, "high");
-  assert.equal(result.findings.some((finding) => finding.category === "medical-context"), true);
+  assert.equal(result.findings.some((finding) => finding.category === "health"), true);
 });

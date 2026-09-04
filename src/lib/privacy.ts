@@ -1,3 +1,5 @@
+import { CONTEXT_RULES, RELATIONSHIP_RULES } from "./privacy-rules.ts";
+
 export type Risk = "low" | "moderate" | "high" | "critical";
 export type ContentPolicy = "standard" | "identity-only" | "confidential-asset";
 export type Finding = { category: string; label: string; severity: Risk };
@@ -42,12 +44,6 @@ const businessAsset = /\b(product idea|business idea|invention|algorithm|formula
 const businessContext = /\b(company|startup|business|product|customer|market|launch|revenue|commercial|founder)\b/i;
 const requestStart = /\b(help me|please|create|develop|suggest|explain|evaluate|assess|plan|compare|list|give me)\b/i;
 
-const sensitiveContexts = [
-  { category: "medical-context", label: "Medical or health context", regex: /\b(diagnosed with|medical record|patient record|prescription|test result|mental health|therapy|therapist)\b/i },
-  { category: "legal-context", label: "Legal or dispute context", regex: /\b(lawsuit|legal case|court case|settlement agreement|attorney-client)\b/i },
-  { category: "financial-context", label: "Private financial context", regex: /\b(bank statement|account balance|tax return|credit report|salary details)\b/i },
-];
-
 function applyDetector(text: string, detector: Detector, aliases: AliasEntry[]) {
   let matchNumber = 0;
   detector.regex.lastIndex = 0;
@@ -65,6 +61,27 @@ function applyDetector(text: string, detector: Detector, aliases: AliasEntry[]) 
     return `${prefix}${token}`;
   });
   return { text: transformed, found: true };
+}
+
+function applyRelationshipRules(text: string, aliases: AliasEntry[], findings: Finding[], changes: string[]) {
+  let transformed = text;
+  const counters: Record<string, number> = {};
+  for (const rule of RELATIONSHIP_RULES) {
+    rule.pattern.lastIndex = 0;
+    let found = false;
+    transformed = transformed.replace(rule.pattern, (...parts: unknown[]) => {
+      found = true;
+      counters[rule.token] = (counters[rule.token] ?? 0) + 1;
+      const token = `[${rule.token}_${counters[rule.token]}]`;
+      aliases.push({ token, value: String(parts[rule.valueGroup]), category: rule.id });
+      return `${String(parts[rule.prefixGroup])} ${token}`;
+    });
+    if (found) {
+      findings.push({ category: rule.id, label: rule.label, severity: "high" });
+      changes.push(`${rule.label} was replaced locally because relationships can identify a person.`);
+    }
+  }
+  return transformed;
 }
 
 function abstractConfidentialBusinessAsset(input: string, aliases: AliasEntry[]) {
@@ -107,6 +124,8 @@ export function analyzePrompt(input: string, mode: "balanced" | "strict" = "bala
     changes.push("The support topic was intentionally preserved while identity details were protected.");
   }
 
+  protectedText = applyRelationshipRules(protectedText, aliases, findings, changes);
+
   for (const detector of detectors) {
     const result = applyDetector(protectedText, detector, aliases);
     protectedText = result.text;
@@ -116,10 +135,10 @@ export function analyzePrompt(input: string, mode: "balanced" | "strict" = "bala
     }
   }
 
-  for (const context of sensitiveContexts) {
-    if (context.regex.test(input) && !findings.some((finding) => finding.category === context.category)) {
-      findings.push({ category: context.category, label: context.label, severity: "high" });
-      changes.push(`${context.label} requires review before sending.`);
+  for (const context of CONTEXT_RULES) {
+    if (context.pattern.test(input) && !findings.some((finding) => finding.category === context.id)) {
+      findings.push({ category: context.id, label: context.label, severity: context.severity });
+      changes.push(`${context.label} was ${context.handling === "preserve" ? "preserved as useful context" : "flagged for review"}.`);
     }
   }
 

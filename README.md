@@ -23,12 +23,14 @@ The provider does **not** receive the user's local placeholder map or original p
 - AES-GCM encrypted browser persistence
 - PBKDF2-based local key derivation
 - Balanced and Strict privacy modes
-- Local detection of email addresses, phone numbers, named identities, credentials, payment-card patterns, and confidential intent
+- Configurable local rule catalogue covering direct identifiers, relationships, health, finance, legal matters, allegations, beliefs, politics, ethnicity, sexuality, employment, education, family, and biometrics
+- Context-aware handling that preserves useful topics while protecting the identities or confidential assets attached to them
 - Mandatory preview for high-sensitivity prompts
 - Exact provider-bound prompt display
 - Privacy trace showing what crossed the boundary
 - Save-encrypted and delete-now session endings
 - Responsive desktop and mobile-browser interface
+- A synthetic privacy corpus with 15 scenarios and automated checks for both privacy and retained usefulness
 - A mock inference route that rejects forbidden original-data fields
 
 The mock response is deliberate. OpenRouter will be integrated after the provider boundary, secret handling, quotas, and model policy are ready.
@@ -76,8 +78,8 @@ pnpm build
 
 ## Next milestones
 
-1. Structured task-capsule schema and local alias map
-2. Broader sensitive-context detectors and adversarial privacy tests
+1. Combination-risk scoring and more country-specific identifiers
+2. Adversarial privacy tests and false-positive measurement
 3. Compact on-device semantic classification
 4. OpenRouter integration with server-side secret isolation
 5. Usage accounting, model policy, rate limits, and managed credits
@@ -87,3 +89,5 @@ pnpm build
 ## Status
 
 Early private prototype. Do not use it yet for production secrets, regulated information, or safety-critical decisions.
+
+See [Privacy Rule Catalogue](docs/privacy-rule-catalog.md) for the current local taxonomy, handling decisions, limitations, research basis, and expansion backlog.
