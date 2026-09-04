@@ -53,3 +53,13 @@ test("flags sensitive meaning even without a direct identifier", () => {
   assert.equal(result.risk, "high");
   assert.equal(result.findings.some((finding) => finding.category === "health"), true);
 });
+
+test("protects an executive, owned company, and company location in a workplace complaint", () => {
+  const result = analyzePrompt("My CEO mr. Olaniyi owns Greyish Chamber. The company which is located in Ikorodu, Lagos does not pay our salaries on time.");
+  assert.doesNotMatch(result.protectedText, /Olaniyi|Greyish Chamber|Ikorodu|Lagos/);
+  assert.match(result.protectedText, /mr\. \[PERSON_1\]/i);
+  assert.match(result.protectedText, /owns \[ORGANIZATION_1\]/);
+  assert.match(result.protectedText, /located in \[LOCATION_1\]/i);
+  assert.match(result.protectedText, /salaries on time/i);
+  assert.equal(result.findings.some((finding) => finding.category === "employment"), true);
+});

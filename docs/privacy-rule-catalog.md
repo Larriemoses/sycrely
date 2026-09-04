@@ -25,6 +25,8 @@ This catalogue is the explainable rule-based baseline for Sycrely's local privac
 - Government identifiers with contextual labels
 - Payment-card-like numbers
 - Organization names introduced through ownership phrases
+- People introduced with common titles such as Mr, Mrs, Dr and Prof
+- Company or workplace locations introduced with “located in” wording
 
 ## Implemented relationship rules
 
@@ -33,6 +35,7 @@ This catalogue is the explainable rule-based baseline for Sycrely's local privac
 - Member of a union, association or other organization
 - Patient at a hospital or clinic
 - Client of a lawyer, accountant or professional firm
+- Executive ownership of a named organization
 
 ## Implemented sensitive-context groups
 
