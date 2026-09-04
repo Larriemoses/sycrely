@@ -28,7 +28,7 @@ export const CONTEXT_RULES: ContextRule[] = [
   { id:"political",label:"Political opinion or affiliation",severity:"high",handling:"preserve",pattern:/\b(political opinion|political party|party member|voting intention|campaign volunteer|activist)\b/i },
   { id:"ethnicity",label:"Race, ethnicity, or nationality context",severity:"high",handling:"preserve",pattern:/\b(race|racial|ethnic(?:ity)?|tribe|tribal|nationality)\b/i },
   { id:"sexuality",label:"Sex life or sexual-orientation context",severity:"high",handling:"preserve",pattern:/\b(sexual orientation|sex life|gay|lesbian|bisexual|transgender)\b/i },
-  { id:"employment",label:"Employment or workplace context",severity:"moderate",handling:"preserve",pattern:/\b(my employer|my workplace|performance review|disciplinary hearing|job termination|work complaint)\b/i },
+  { id:"employment",label:"Employment or workplace context",severity:"moderate",handling:"preserve",pattern:/\b(my employer|my workplace|my CEO|our CEO|employees?|salar(?:y|ies)|pay(?:s|ing|ment)? us|performance review|disciplinary hearing|job termination|work complaint|work ethic)\b/i },
   { id:"education",label:"Education record or student context",severity:"moderate",handling:"preserve",pattern:/\b(student|school record|exam result|academic record|disciplinary record|scholarship)\b/i },
   { id:"family",label:"Family or relationship context",severity:"moderate",handling:"preserve",pattern:/\b(my child|my parent|my spouse|my partner|my family|custody|domestic)\b/i },
   { id:"biometric",label:"Biometric or genetic context",severity:"critical",handling:"review",pattern:/\b(fingerprint|face scan|voiceprint|retina|iris scan|genetic data|dna result)\b/i },
@@ -44,4 +44,4 @@ export const RELATIONSHIP_RULES: RelationshipRule[] = [
   { id:"client-of",label:"Professional-service affiliation",token:"ORGANIZATION",prefixGroup:1,valueGroup:2,pattern:/\b(I am a client of|my lawyer is|my accountant is)\s+([A-Z][\w&'.-]+(?:\s+[A-Z][\w&'.-]+){0,5})/g },
 ];
 
-export const CATALOG_VERSION = "2026.09.1";
+export const CATALOG_VERSION = "2026.09.2";

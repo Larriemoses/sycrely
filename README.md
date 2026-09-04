@@ -30,7 +30,7 @@ The provider does **not** receive the user's local placeholder map or original p
 - Privacy trace showing what crossed the boundary
 - Save-encrypted and delete-now session endings
 - Responsive desktop and mobile-browser interface
-- A synthetic privacy corpus with 15 scenarios and automated checks for both privacy and retained usefulness
+- A synthetic privacy corpus with 16 scenarios and automated checks for both privacy and retained usefulness
 - A mock inference route that rejects forbidden original-data fields
 
 The mock response is deliberate. OpenRouter will be integrated after the provider boundary, secret handling, quotas, and model policy are ready.
