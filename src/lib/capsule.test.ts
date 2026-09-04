@@ -18,6 +18,15 @@ test("capsules tell the provider not to reverse placeholders", () => {
   assert.equal(capsule.constraints.some((item) => item.includes("guess")), true);
 });
 
+test("personal support capsules preserve the useful topic", () => {
+  const analysis = analyzePrompt("I'm Olarewaju and I need therapy as a student.");
+  const capsule = buildTaskCapsule(analysis, "balanced");
+  assert.equal(capsule.privacy.contentPolicy, "identity-only");
+  assert.match(capsule.safeContext.protectedPrompt, /therapy as a student/i);
+  assert.match(capsule.requestedOutput, /supportive, non-diagnostic guidance/i);
+  assert.equal(capsule.constraints.some((item) => item.includes("personal-support topic")), true);
+});
+
 test("rejects an incomplete capsule", () => {
   assert.equal(isTaskCapsule({ version: "1.0", task: "Do something" }), false);
 });

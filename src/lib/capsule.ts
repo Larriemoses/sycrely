@@ -1,4 +1,4 @@
-import type { PrivacyAnalysis, Risk } from "./privacy";
+import type { ContentPolicy, PrivacyAnalysis, Risk } from "./privacy";
 
 export type PrivacyMode = "balanced" | "strict";
 
@@ -12,6 +12,8 @@ export type TaskCapsule = {
   constraints: string[];
   privacy: {
     mode: PrivacyMode;
+    contentPolicy: ContentPolicy;
+    policyExplanation: string;
     residualRisk: Risk;
     categories: string[];
     transformationCount: number;
@@ -19,6 +21,7 @@ export type TaskCapsule = {
 };
 
 const outputIntents: Array<[RegExp, string]> = [
+  [/\b(therapy|therapist|mental health|anxiety|depression|grief|trauma|emotional support)\b/i, "Supportive, non-diagnostic guidance with practical next steps"],
   [/\b(plan|strategy|roadmap|launch)\b/i, "A practical, phased plan with risks and next actions"],
   [/\b(compare|versus|vs\.?|difference)\b/i, "A clear comparison with trade-offs and a recommendation"],
   [/\b(research|investigate|evidence|sources?)\b/i, "An evidence-led research summary with uncertainty clearly marked"],
@@ -38,6 +41,11 @@ function inferRequestedOutput(protectedText: string) {
 }
 
 export function buildTaskCapsule(analysis: PrivacyAnalysis, mode: PrivacyMode): TaskCapsule {
+  const contextRule = analysis.contentPolicy === "identity-only"
+    ? "Keep the personal-support topic intact; do not reduce it to a vague unrelated request."
+    : analysis.contentPolicy === "confidential-asset"
+      ? "Work without requesting, reconstructing, or guessing the confidential asset details."
+      : "Use only the protected context supplied in this capsule.";
   return {
     version: "1.0",
     task: summarizeTask(analysis.protectedText),
@@ -47,9 +55,12 @@ export function buildTaskCapsule(analysis: PrivacyAnalysis, mode: PrivacyMode): 
       "Do not guess or request the real values behind placeholders.",
       "Preserve placeholder tokens exactly as written.",
       "State uncertainty instead of inventing missing private context.",
+      contextRule,
     ],
     privacy: {
       mode,
+      contentPolicy: analysis.contentPolicy,
+      policyExplanation: analysis.policyExplanation,
       residualRisk: analysis.risk,
       categories: [...new Set(analysis.findings.map((finding) => finding.category))],
       transformationCount: analysis.changes.filter((change) => !change.startsWith("No sensitive")).length,
@@ -71,5 +82,6 @@ export function isTaskCapsule(value: unknown): value is TaskCapsule {
     && Array.isArray(capsule.constraints)
     && capsule.constraints.every((item) => typeof item === "string")
     && !!capsule.privacy
-    && (capsule.privacy.mode === "balanced" || capsule.privacy.mode === "strict");
+    && (capsule.privacy.mode === "balanced" || capsule.privacy.mode === "strict")
+    && ["standard", "identity-only", "confidential-asset"].includes(capsule.privacy.contentPolicy);
 }
