@@ -12,6 +12,14 @@ export type PrivacyAnalysis = {
   aliases: AliasEntry[];
   contentPolicy: ContentPolicy;
   policyExplanation: string;
+  combinationRisk: CombinationRisk;
+};
+
+export type CombinationRisk = {
+  score: number;
+  level: "none" | "watch" | "high";
+  signals: string[];
+  explanation: string;
 };
 
 type Detector = {
@@ -60,6 +68,37 @@ const confidentialSignal = /\b(confidential|secret|hidden|unpublished|unreleased
 const businessAsset = /\b(product idea|business idea|invention|algorithm|formula|prototype|mechanism|technical design|business model|research idea|technology|unique feature|designed? a|method|project|pricing|launch plan|ranking score|board note|acquire|acquisition)\b/i;
 const businessContext = /\b(company|startup|business|product|customer|market|launch|revenue|commercial|founder|employer|institute|research house|logistics|foods|co-op|repository|board)\b/i;
 const requestStart = /\b(help me|please|create|develop|suggest|explain|evaluate|assess|plan|compare|list|give me)\b/i;
+
+const combinationSignals: Array<{ label: string; weight: number; pattern: RegExp }> = [
+  { label: "Exact age", weight: 1, pattern: /\b(?:I am|I'm|aged?|age is)\s+(?:an?\s+)?\d{1,3}(?:[ -]years?[ -]old)?\b/i },
+  { label: "Specific residence or origin", weight: 2, pattern: /\b(?:live|living|reside|residing|based|grew up|come|am)\s+(?:at|in|from)\s+[A-Z][\p{L}\p{M}'’-]+/iu },
+  { label: "Specific occupation", weight: 1, pattern: /\b(?:I am|I'm|work as|working as)\s+(?:an?\s+)?(?:\d{1,3}(?:[ -]years?[ -]old)?\s+)?(?:accountant|analyst|architect|banker|designer|developer|doctor|driver|engineer|founder|journalist|lawyer|lecturer|manager|nurse|officer|pharmacist|researcher|student|teacher|technician)\b/i },
+  { label: "Exact date", weight: 1, pattern: /\b(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\d{1,2}\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4})\b/i },
+  { label: "Small-group detail", weight: 1, pattern: /\b(?:only|sole|one of (?:two|three|four|five)|the youngest|the oldest)\b/i },
+];
+
+function assessCombinationRisk(input: string, findings: Finding[]): CombinationRisk {
+  const signals = new Map<string, number>();
+  const categories = new Set(findings.map((finding) => finding.category));
+  if (categories.has("identity")) signals.set("Named person", 3);
+  if (categories.has("organization") || ["student-of", "works-at", "member-of", "patient-at", "client-of"].some((item) => categories.has(item))) signals.set("Named organization or affiliation", 2);
+  if (categories.has("location") || categories.has("address")) signals.set("Specific location", 2);
+  if (["health", "financial", "legal", "criminal-allegation", "religion-belief", "political", "ethnicity", "sexuality", "biometric"].some((item) => categories.has(item))) signals.set("Sensitive subject", 2);
+  for (const signal of combinationSignals) if (signal.pattern.test(input)) signals.set(signal.label, signal.weight);
+
+  const score = [...signals.values()].reduce((total, value) => total + value, 0);
+  const level = signals.size >= 3 && score >= 5 ? "high" : signals.size >= 2 && score >= 3 ? "watch" : "none";
+  return {
+    score,
+    level,
+    signals: [...signals.keys()],
+    explanation: level === "high"
+      ? "Several details could identify someone when combined, even if each detail seems harmless alone."
+      : level === "watch"
+        ? "A few details may become identifying if more context is added."
+        : "No meaningful combination of identifying clues was detected.",
+  };
+}
 
 function applyDetector(text: string, detector: Detector, aliases: AliasEntry[]) {
   let matchNumber = 0;
@@ -182,6 +221,12 @@ export function analyzePrompt(input: string, mode: "balanced" | "strict" = "bala
     }
   }
 
+  const combinationRisk = assessCombinationRisk(input, findings);
+  if (combinationRisk.level === "high") {
+    findings.push({ category: "combination-risk", label: "Combined details may identify someone", severity: "high" });
+    changes.push("The request was paused because several details become identifying when combined.");
+  }
+
   if (mode === "strict") {
     protectedText = protectedText.replace(/\b(?:exactly|specifically|located at|working with)\b/gi, "").replace(/\s{2,}/g, " ").trim();
     changes.push("Strict mode minimized unnecessary specificity.");
@@ -199,5 +244,6 @@ export function analyzePrompt(input: string, mode: "balanced" | "strict" = "bala
     aliases,
     contentPolicy,
     policyExplanation,
+    combinationRisk,
   };
 }

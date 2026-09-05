@@ -63,3 +63,18 @@ test("protects an executive, owned company, and company location in a workplace 
   assert.match(result.protectedText, /salaries on time/i);
   assert.equal(result.findings.some((finding) => finding.category === "employment"), true);
 });
+
+test("detects when individually ordinary details become identifying together", () => {
+  const result = analyzePrompt("I'm a 37 year old accountant living in Ikorodu. I work at CedarPeak Ventures and need advice about a private salary dispute.");
+  assert.equal(result.combinationRisk.level, "high");
+  assert.ok(result.combinationRisk.score >= 5);
+  assert.equal(result.combinationRisk.signals.includes("Exact age"), true);
+  assert.equal(result.combinationRisk.signals.includes("Specific occupation"), true);
+  assert.equal(result.findings.some((finding) => finding.category === "combination-risk"), true);
+});
+
+test("does not flag an ordinary public question as a combination risk", () => {
+  const result = analyzePrompt("Explain how photosynthesis works for a student");
+  assert.equal(result.combinationRisk.level, "none");
+  assert.equal(result.findings.some((finding) => finding.category === "combination-risk"), false);
+});
