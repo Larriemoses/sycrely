@@ -52,11 +52,15 @@ The color system was subsequently refined by theme: green controls use white tex
 - The external inference endpoint remains a mock; no OpenRouter key is required yet.
 - Sycrely must not be used for production secrets or regulated decisions at this stage.
 
+## Classifier calibration
+
+A separate 48-case semantic benchmark was added with 32 sensitive paraphrases and 16 harmless controls. Baseline 0.1.0 achieved 81.25% category recall and 83.87% measured precision at roughly 1.7 ms average execution time on the development machine. The misses and false alarms remain documented rather than being hidden by lowering the test standard. A replaceable classifier interface now allows a future browser model to be evaluated against the same contract.
+
 ## Next milestones
 
-1. Expand and calibrate the classifier evaluation set.
-2. Define a replaceable classifier adapter for a browser-sized ONNX or Transformers.js model.
-3. Compare semantic recall, false-positive rate, latency, download size, and memory use.
+1. Expand the calibration benchmark with Nigerian language styles and harder benign controls.
+2. Evaluate a browser-sized ONNX or Transformers.js model through the classifier adapter.
+3. Compare semantic recall, false-positive rate, latency, download size, and memory use on mobile devices.
 4. Integrate OpenRouter with server-only credentials after the local boundary is stable.
 5. Add quotas, managed credits, model policy, rate limiting, and abuse controls.
 6. Add grounded response verification and uncertainty indicators.

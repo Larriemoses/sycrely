@@ -13,6 +13,11 @@ export type SemanticClassification = {
   durationMs: number;
 };
 
+export interface SemanticClassifier {
+  readonly id: string;
+  classify(input: string): SemanticClassification;
+}
+
 const examples: Record<SemanticCategory, string[]> = {
   "personal-sensitive": [
     "I need private advice about my mental health and therapy",
@@ -73,3 +78,8 @@ export function classifySemanticContext(input: string): SemanticClassification {
   }).filter((prediction) => prediction.confidence >= 0.18).sort((a, b) => b.confidence - a.confidence);
   return { engine: "local-character-ngram-baseline", version: "0.1.0", predictions, durationMs: Number((performance.now() - started).toFixed(2)) };
 }
+
+export const localNgramClassifier: SemanticClassifier = {
+  id: "local-character-ngram-baseline@0.1.0",
+  classify: classifySemanticContext,
+};
