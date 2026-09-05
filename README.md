@@ -25,6 +25,7 @@ The provider does **not** receive the user's local placeholder map or original p
 - Balanced and Strict privacy modes
 - Configurable local rule catalogue covering direct identifiers, relationships, health, finance, legal matters, allegations, beliefs, politics, ethnicity, sexuality, employment, education, family, and biometrics
 - Context-aware handling that preserves useful topics while protecting the identities or confidential assets attached to them
+- Local combination-risk scoring that warns when several ordinary details could identify someone together
 - Mandatory preview for high-sensitivity prompts
 - Exact provider-bound prompt display
 - Privacy trace showing what crossed the boundary
@@ -79,7 +80,7 @@ pnpm build
 
 ## Next milestones
 
-1. Combination-risk scoring and more country-specific identifiers
+1. More country-specific identifiers
 2. Adversarial privacy tests and false-positive measurement
 3. Compact on-device semantic classification
 4. OpenRouter integration with server-side secret isolation
