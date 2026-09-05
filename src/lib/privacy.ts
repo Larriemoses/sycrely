@@ -49,12 +49,12 @@ const detectors: Detector[] = [
   { category: "network", label: "IP address", severity: "high", regex: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g, token: "IP_ADDRESS", restorable: true },
   { category: "network", label: "Private hostname or endpoint", severity: "critical", regex: /\b(?:https?:\/\/)?[a-z0-9.-]+\.(?:internal|local|test)(?:\/[\w./-]*)?/gi, token: "PRIVATE_ENDPOINT_REMOVED" },
   { category: "network", label: "Private route", severity: "critical", regex: /\/(?:ops|admin|internal|private)[\w/-]*/gi, token: "PRIVATE_ENDPOINT_REMOVED" },
-  { category: "identity", label: "Named identity", severity: "high", regex: /\b([Mm]y [Nn]ame [Ii]s)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})/g, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
+  { category: "identity", label: "Named identity", severity: "high", regex: /\b((?:[Mm]y|[Hh]is|[Hh]er|[Tt]heir|[Oo]ur)\s+name\s+is)\s+(\p{Lu}[\p{L}\p{M}'’-]+(?:\s+\p{Lu}[\p{L}\p{M}'’-]+){0,2})/gu, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "identity", label: "Named identity", severity: "high", regex: /\b(I(?:['’]m| am)|[Cc]all me)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})/g, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "identity", label: "Named identity", severity: "high", regex: /\b((?:Mr|mr|Mrs|mrs|Ms|ms|Miss|miss|Dr|dr|Prof|prof|Chief|chief|Barrister|barrister|Engr|engr|Pastor|pastor|Imam|imam)\s*\.?)\s+(\p{Lu}[\p{L}\p{M}'’-]+(?:\s+\p{Lu}[\p{L}\p{M}'’-]+){0,2})/gu, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "identity", label: "Customer or recipient identity", severity: "high", regex: /\b((?:customer|client|patient|tenant|employee|recipient)(?:['’]s)?\s+(?:name|details)(?:\s+(?:is|are))?(?:\s+to\s+(?:my|the)\s+(?:delivery\s+guy|courier|driver))?\s*[:=-]?\s*)(\p{Lu}[\p{L}\p{M}'’-]+(?:\s+\p{Lu}[\p{L}\p{M}'’-]+){0,2})/giu, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "organization", label: "Private organization name", severity: "high", regex: /\b([Mm]y (?:company|startup|business|employer) is)\s+([A-Z][\w&.-]+(?:\s+[A-Z][\w&.-]+){0,3})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
-  { category: "organization", label: "Private organization name", severity: "high", regex: /\b((?:[Mm]y|[Hh]is|[Hh]er|[Tt]heir|[Oo]ur)\s+(?:company|organization|startup|business|employer|firm|agency|school|hospital|clinic|NGO|union)\s+(?:is called|is named|is))\s+([A-Z][\w'-]*(?:\s+(?:&\s+)?[A-Z][\w'-]*){0,7})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
+  { category: "organization", label: "Private organization name", severity: "high", regex: /\b((?:[Mm]y|[Hh]is|[Hh]er|[Tt]heir|[Oo]ur|[Tt]he)\s+(?:company|organization|startup|business|employer|firm|agency|school|hospital|clinic|NGO|union)\s+(?:is called|is named|is))\s+([A-Z][\w'-]*(?:\s+(?:&\s+)?[A-Z][\w'-]*){0,7})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "organization", label: "Private organization name", severity: "high", regex: /\b((?:[Tt]he\s+)?(?:company|startup|business|employer|firm|agency|school|hospital|clinic|NGO|union)\s+(?:called|named))\s+([A-Z][\w'-]*(?:\s+(?:&\s+)?[A-Z][\w'-]*){0,7})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "organization", label: "Private organization name", severity: "high", regex: /\b(I work for|I am employed at|works for|works with|consults for|interns at)\s+([A-Z][\w'-]*(?:\s+(?:&\s+)?[A-Z][\w'-]*){0,7})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "organization", label: "Private organization name", severity: "high", regex: /\b((?:CEO|director|founder|owner|manager|chairperson)\s+(?:of|at))\s+([A-Z][\w'-]*(?:\s+(?:&\s+)?[A-Z][\w'-]*){0,7})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
@@ -66,8 +66,9 @@ const detectors: Detector[] = [
   { category: "government-id", label: "Government identifier", severity: "critical", regex: /\b(?:SSN|NIN|passport(?: number)?|national id)\s*[:#-]?\s*[A-Z0-9-]{5,}\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED" },
   { category: "government-id", label: "Passport or travel-document reference", severity: "critical", regex: /\bPPT-FICT-[A-Z0-9-]+\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED" },
   { category: "finance", label: "Private financial reference", severity: "critical", regex: /\b(?:ACCT|WALLET)-TEST-[A-Z0-9-]+\b/gi, token: "FINANCIAL_IDENTIFIER_REMOVED" },
-  { category: "finance", label: "Exact financial amount", severity: "high", regex: /\bNGN\s+[\d,.]+(?:\s+(?:million|billion))?\b/gi, token: "FINANCIAL_AMOUNT", restorable: true },
-  { category: "finance", label: "Exact naira amount", severity: "high", regex: /₦\s*[\d,.]+(?:\s+(?:million|billion))?/gi, token: "FINANCIAL_AMOUNT", restorable: true },
+  { category: "finance", label: "Exact financial amount", severity: "high", regex: /\bNGN\s+\d[\d,]*(?:\.\d+)?(?:\s+(?:million|billion))?\b/gi, token: "FINANCIAL_AMOUNT", restorable: true },
+  { category: "finance", label: "Exact naira amount", severity: "high", regex: /₦\s*\d[\d,]*(?:\.\d+)?(?:\s+(?:million|billion))?/gi, token: "FINANCIAL_AMOUNT", restorable: true },
+  { category: "employment", label: "Identifying job role", severity: "high", regex: /\b((?:I\s+(?:was\s+)?working\s+(?:there\s+)?as|I\s+(?:worked|work)\s+as|my\s+(?:job\s+)?role\s+(?:was|is))(?:\s+an?)?)\s+([a-z][a-z -]{2,40})(?=\s+(?:and|but|when|before|after)\b|[,.])/gi, token: "JOB_ROLE", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "sensitive-reference", label: "Sensitive case, genetic, or biometric reference", severity: "critical", regex: /\b(?:CASE-FICT|GENE-TEST|FPT-TEST|FACE-EMBED-TEST)-?[A-Z0-9:/.-]*\b/gi, token: "SENSITIVE_REFERENCE_REMOVED" },
   { category: "education", label: "Exact academic result", severity: "high", regex: /\b\d\.\d{2}\/\d\.\d{2}\b/g, token: "ACADEMIC_RESULT", restorable: true },
   { category: "credential", label: "Credential or signing secret", severity: "critical", regex: /\b(?:PWD_TEST_ONLY|INTERNAL_SIGNING_SALT_TEST)_[A-Z0-9_]+\b/g, token: "CREDENTIAL_REMOVED" },
@@ -281,4 +282,10 @@ export function analyzePrompt(input: string, mode: "balanced" | "strict" = "bala
     combinationRisk,
     semanticClassification,
   };
+}
+
+export function restoreAliases(text: string, aliases: readonly AliasEntry[]) {
+  if (!aliases.length) return text;
+  const byLongestToken = [...aliases].sort((left, right) => right.token.length - left.token.length);
+  return byLongestToken.reduce((restored, alias) => restored.replaceAll(alias.token, alias.value), text);
 }
