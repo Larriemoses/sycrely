@@ -28,3 +28,16 @@ Improvements include privacy-signalled natural-name detection, third-person rela
 ## Interpretation
 
 This dataset is an evaluation set, not yet a semantic-model training set. The engine never reads its `must_hide` labels during analysis. Remaining failures cluster around deliberately obfuscated text, multi-sentence confidential assets, implicit named entities, and benign technical examples that resemble secrets. Those cases should guide the next deterministic normalization pass and later the on-device semantic classifier.
+
+## Adversarial hardening update
+
+The dedicated adversarial pass added 12 deliberately disguised secrets and 12 benign controls. It now covers spaced and punctuated NIN/BVN values, spaced email addresses, unusual title punctuation, Unicode names, formatted phone numbers, and labelled Nigerian financial, tax, and education identifiers.
+
+All 24 dedicated cases pass. The broader 300-prompt measurement also improved to:
+
+- 193 fully passing cases
+- 32 cases retaining at least one labelled sensitive substring
+- 15 benign controls producing a finding
+- 11 cases losing a labelled useful substring
+
+The remaining failures are recorded honestly; they are not suitable for increasingly broad regular expressions because that would raise false alarms. They are candidates for the planned compact on-device semantic classifier.

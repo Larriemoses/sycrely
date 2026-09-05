@@ -35,20 +35,20 @@ type Detector = {
 
 const detectors: Detector[] = [
   { category: "credential", label: "Credential or secret key", severity: "critical", regex: /\b(?:sk-[a-z0-9_-]{12,}|api[_ -]?key\s*[:=]\s*\S+|password\s*[:=]\s*\S+)\b/gi, token: "CREDENTIAL_REMOVED" },
-  { category: "government-id", label: "Nigerian National Identification Number (NIN)", severity: "critical", regex: /\b((?:my\s+)?NIN(?:\s+(?:is|number))?\s*[:#=-]?\s*)(\d{11})\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
-  { category: "nigeria-financial-id", label: "Nigerian Bank Verification Number (BVN)", severity: "critical", regex: /\b((?:my\s+)?BVN(?:\s+(?:is|number))?\s*[:#=-]?\s*)(\d{11})\b/gi, token: "FINANCIAL_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
+  { category: "government-id", label: "Nigerian National Identification Number (NIN)", severity: "critical", regex: /\b((?:my\s+)?N\s*[.\- ]?\s*I\s*[.\- ]?\s*N(?:\s+(?:is|number))?\s*[:#=-]?\s*)(\d(?:[\s-]?\d){10})\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
+  { category: "nigeria-financial-id", label: "Nigerian Bank Verification Number (BVN)", severity: "critical", regex: /\b((?:my\s+)?B\s*[.\- ]?\s*V\s*[.\- ]?\s*N(?:\s+(?:is|number))?\s*[:#=-]?\s*)(\d(?:[\s-]?\d){10})\b/gi, token: "FINANCIAL_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
   { category: "nigeria-voter-id", label: "Nigerian Voter Identification Number (VIN)", severity: "critical", regex: /\b((?:my\s+)?(?:VIN|voter identification number|voter(?:'s)? number)(?:\s+is)?\s*[:#=-]?\s*)([A-Z0-9-]{10,25})\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
   { category: "nigeria-business-id", label: "Nigerian business registration number", severity: "high", regex: /\b((?:CAC\s+)?(?:RC|BN|IT)(?:\s+(?:number|no\.?))?(?:\s+is)?\s*[:#=-]?\s*)(\d{4,10})\b/gi, token: "BUSINESS_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
   { category: "nigeria-tax-id", label: "Nigerian tax identifier", severity: "critical", regex: /\b((?:my\s+)?(?:TIN|tax identification number|tax ID)(?:\s+is)?\s*[:#=-]?\s*)([A-Z0-9-]{8,20})\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
   { category: "nigeria-financial-id", label: "Nigerian bank account number", severity: "critical", regex: /\b((?:my\s+)?(?:bank\s+)?(?:account|acct)(?:\s+(?:number|no\.?))?(?:\s+is)?\s*[:#=-]?\s*)(\d{10})\b/gi, token: "FINANCIAL_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
   { category: "education-id", label: "Student or matriculation number", severity: "high", regex: /\b((?:my\s+)?(?:matric(?:ulation)?|student)(?:\s+(?:number|no\.?|ID))?(?:\s+is)?\s*[:#=-]?\s*)([A-Z0-9][A-Z0-9/-]{4,24})\b/gi, token: "EDUCATION_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
-  { category: "email", label: "Email address", severity: "high", regex: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, token: "EMAIL", restorable: true },
+  { category: "email", label: "Email address", severity: "high", regex: /\b[A-Z0-9._%+-]+\s*@\s*[A-Z0-9.-]+\s*\.\s*[A-Z]{2,}\b/gi, token: "EMAIL", restorable: true },
   { category: "network", label: "IP address", severity: "high", regex: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g, token: "IP_ADDRESS", restorable: true },
   { category: "network", label: "Private hostname or endpoint", severity: "critical", regex: /\b(?:https?:\/\/)?[a-z0-9.-]+\.(?:internal|local|test)(?:\/[\w./-]*)?/gi, token: "PRIVATE_ENDPOINT_REMOVED" },
   { category: "network", label: "Private route", severity: "critical", regex: /\/(?:ops|admin|internal|private)[\w/-]*/gi, token: "PRIVATE_ENDPOINT_REMOVED" },
   { category: "identity", label: "Named identity", severity: "high", regex: /\b([Mm]y [Nn]ame [Ii]s)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})/g, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "identity", label: "Named identity", severity: "high", regex: /\b(I(?:['’]m| am)|[Cc]all me)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})/g, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
-  { category: "identity", label: "Named identity", severity: "high", regex: /\b((?:Mr|mr|Mrs|mrs|Ms|ms|Miss|miss|Dr|dr|Prof|prof|Chief|chief|Barrister|barrister|Engr|engr|Pastor|pastor|Imam|imam)\.?)\s+(\p{Lu}[\p{L}\p{M}'’-]+(?:\s+\p{Lu}[\p{L}\p{M}'’-]+){0,2})/gu, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
+  { category: "identity", label: "Named identity", severity: "high", regex: /\b((?:Mr|mr|Mrs|mrs|Ms|ms|Miss|miss|Dr|dr|Prof|prof|Chief|chief|Barrister|barrister|Engr|engr|Pastor|pastor|Imam|imam)\s*\.?)\s+(\p{Lu}[\p{L}\p{M}'’-]+(?:\s+\p{Lu}[\p{L}\p{M}'’-]+){0,2})/gu, token: "PERSON", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "organization", label: "Private organization name", severity: "high", regex: /\b([Mm]y (?:company|startup|business|employer) is)\s+([A-Z][\w&.-]+(?:\s+[A-Z][\w&.-]+){0,3})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "organization", label: "Private organization name", severity: "high", regex: /\b((?:[Mm]y|[Hh]is|[Hh]er|[Tt]heir|[Oo]ur)\s+(?:company|organization|startup|business|employer|firm|agency|school|hospital|clinic|NGO|union)\s+(?:is called|is named|is))\s+([A-Z][\w'-]*(?:\s+(?:&\s+)?[A-Z][\w'-]*){0,7})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "organization", label: "Private organization name", severity: "high", regex: /\b((?:[Tt]he\s+)?(?:company|startup|business|employer|firm|agency|school|hospital|clinic|NGO|union)\s+(?:called|named))\s+([A-Z][\w'-]*(?:\s+(?:&\s+)?[A-Z][\w'-]*){0,7})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
@@ -67,7 +67,8 @@ const detectors: Detector[] = [
   { category: "education", label: "Exact academic result", severity: "high", regex: /\b\d\.\d{2}\/\d\.\d{2}\b/g, token: "ACADEMIC_RESULT", restorable: true },
   { category: "credential", label: "Credential or signing secret", severity: "critical", regex: /\b(?:PWD_TEST_ONLY|INTERNAL_SIGNING_SALT_TEST)_[A-Z0-9_]+\b/g, token: "CREDENTIAL_REMOVED" },
   { category: "finance", label: "Payment card pattern", severity: "critical", regex: /\b(?:4(?:[ -]*\d){15}|5[1-5](?:[ -]*\d){14})\b/g, token: "FINANCIAL_IDENTIFIER_REMOVED" },
-  { category: "phone", label: "Phone number", severity: "high", regex: /(?<!\w)(?:\+?\d[\d\s().-]{8,}\d)(?!\w)/g, token: "PHONE", restorable: true },
+  { category: "phone", label: "Phone number", severity: "high", regex: /(?<!\w)\+\d[\d\s().-]{8,}\d(?!\w)/g, token: "PHONE", restorable: true },
+  { category: "phone", label: "Phone number", severity: "high", regex: /\b((?:my\s+)?(?:phone|mobile)(?:\s+number)?(?:\s+is)?|call me(?:\s+on)?|contact me(?:\s+on)?|reach me at)\s*[:=-]?\s*(0\d[\d\s().-]{8,}\d)\b/gi, token: "PHONE", captureGroup: 2, keepPrefix: 1, restorable: true },
 ];
 
 const personalSupport = /\b(therapy|therapist|counsell?ing|emotional support|mental health|anxiety|depression|grief|trauma|what i(?:'m| am) facing)\b/i;
@@ -149,7 +150,7 @@ function applyRelationshipRules(text: string, aliases: AliasEntry[], findings: F
 }
 
 function applyContextualProperNames(text: string, input: string, aliases: AliasEntry[], findings: Finding[], changes: string[]) {
-  const privacySignal = /\b(private|privately|privte|confidential|confidentia|privacy|protect|redact|hide|sensitive|remove only|remve|identfy|does not need (?:the )?(?:person|person's|organisation|organization).*identity)\b/i;
+  const privacySignal = /\b(private|privately|privte|confidential|confidentia|privacy|protect(?:ing|ed)?|redact|hide|sensitive|remove only|remve|identfy|does not need (?:the )?(?:person|person's|organisation|organization).*identity)\b/i;
   if (!privacySignal.test(input)) return text;
   const pattern = /\b(\p{Lu}[\p{Ll}\p{M}'’-]{1,}(?:\s+\p{Lu}[\p{Ll}\p{M}'’-]{1,}){1,2})\b/gu;
   let count = aliases.filter(alias => alias.category === "identity").length;
