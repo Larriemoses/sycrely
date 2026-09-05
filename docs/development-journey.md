@@ -50,6 +50,12 @@ Theme selection now defaults to the operating system preference and listens for 
 
 The inference boundary now supports real OpenRouter answers without weakening the browser-to-server request shape. Mock mode remains the safe default and makes no external request. Live mode activates only when a server-side key, selected model, and explicit model allowlist are all configured. Requests require zero-data-retention routing and deny data-collecting providers, use a response-token limit and timeout, and return a transparent model/token receipt to the interface. Upstream error bodies are never relayed to the browser.
 
+The first controlled live test used OpenRouter's free-model router with a harmless, already-protected student-stress request. OpenRouter selected `inclusionai/ling-3.0-flash-sante:free` through Novita and returned a complete answer with a 680-token usage receipt. This confirms that the live provider path, privacy routing request, response parsing, and transparent delivery metadata work together. It does not replace a provider-policy audit or production security review.
+
+## Conversation interaction refinement
+
+The workspace now provides clickable protected-task starters, clear hover/pressed/focus/selected/disabled states, an auto-growing composer, keyboard guidance, a local-protection readiness signal, animated secure-thinking feedback, message entrance motion, and clearer delivery receipts. Motion is intentionally restrained and disabled when the device requests reduced motion. Mobile layouts reduce density without hiding the central privacy state.
+
 ## Current limitations
 
 - The semantic baseline has a small synthetic reference set and is not production-ready.
