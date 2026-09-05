@@ -28,6 +28,7 @@ The provider does **not** receive the user's local placeholder map or original p
 - Local combination-risk scoring that warns when several ordinary details could identify someone together
 - Context-aware protection for Nigerian NIN, BVN, VIN, CAC registration, tax, bank-account, and matriculation identifiers
 - A dedicated adversarial gate covering disguised secrets and benign lookalikes, with measured false-positive and retained-context baselines
+- A dependency-free local semantic-classifier baseline with confidence, timing, transparent review output, and rule-only fallback
 - Mandatory preview for high-sensitivity prompts
 - Exact provider-bound prompt display
 - Privacy trace showing what crossed the boundary
@@ -82,7 +83,7 @@ pnpm build
 
 ## Next milestones
 
-1. Compact on-device semantic classification
+1. Classifier calibration and browser-model candidate evaluation
 2. Additional country-specific identifier packs
 3. Expanded adversarial and false-positive datasets
 4. OpenRouter integration with server-side secret isolation
@@ -97,3 +98,5 @@ Early private prototype. Do not use it yet for production secrets, regulated inf
 See [Privacy Rule Catalogue](docs/privacy-rule-catalog.md) for the current local taxonomy, handling decisions, limitations, research basis, and expansion backlog.
 
 See [Organization Identification Benchmark](docs/organization-identification-benchmark.md) for the dedicated entity-relationship test results.
+
+See [Development Journey](docs/development-journey.md) for the milestone history and [Local Semantic Classifier](docs/local-semantic-classifier.md) for the current classifier contract and limitations.

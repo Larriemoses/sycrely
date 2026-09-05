@@ -1,4 +1,5 @@
 import { CONTEXT_RULES, RELATIONSHIP_RULES } from "./privacy-rules.ts";
+import { classifySemanticContext, type SemanticClassification } from "./semantic-classifier.ts";
 
 export type Risk = "low" | "moderate" | "high" | "critical";
 export type ContentPolicy = "standard" | "identity-only" | "confidential-asset";
@@ -13,6 +14,7 @@ export type PrivacyAnalysis = {
   contentPolicy: ContentPolicy;
   policyExplanation: string;
   combinationRisk: CombinationRisk;
+  semanticClassification: SemanticClassification;
 };
 
 export type CombinationRisk = {
@@ -192,6 +194,12 @@ export function analyzePrompt(input: string, mode: "balanced" | "strict" = "bala
   const findings: Finding[] = [];
   const changes: string[] = [];
   const aliases: AliasEntry[] = [];
+  let semanticClassification: SemanticClassification;
+  try {
+    semanticClassification = classifySemanticContext(input);
+  } catch {
+    semanticClassification = { engine: "local-character-ngram-baseline", version: "0.1.0", predictions: [], durationMs: 0 };
+  }
   const abstraction = abstractConfidentialBusinessAsset(input, aliases);
   let protectedText = abstraction.text;
   let contentPolicy: ContentPolicy = "standard";
@@ -229,6 +237,19 @@ export function analyzePrompt(input: string, mode: "balanced" | "strict" = "bala
     }
   }
 
+  const semanticLabels: Record<string, string> = {
+    "personal-sensitive": "Semantic signal: sensitive personal context",
+    "confidential-asset": "Semantic signal: confidential asset",
+    "allegation-retaliation": "Semantic signal: allegation or retaliation",
+    "identity-affiliation": "Semantic signal: identifying affiliation",
+  };
+  for (const prediction of semanticClassification.predictions.filter((item) => item.confidence >= 0.42)) {
+    if (!findings.some((finding) => finding.category === `semantic-${prediction.category}`)) {
+      findings.push({ category: `semantic-${prediction.category}`, label: semanticLabels[prediction.category], severity: "high" });
+      changes.push(`The local semantic classifier detected ${prediction.category.replaceAll("-", " ")} context.`);
+    }
+  }
+
   const combinationRisk = assessCombinationRisk(input, findings);
   if (combinationRisk.level === "high") {
     findings.push({ category: "combination-risk", label: "Combined details may identify someone", severity: "high" });
@@ -253,5 +274,6 @@ export function analyzePrompt(input: string, mode: "balanced" | "strict" = "bala
     contentPolicy,
     policyExplanation,
     combinationRisk,
+    semanticClassification,
   };
 }
