@@ -89,3 +89,16 @@ test("protects every direct identifier in a Nigerian landlord-payment request", 
   assert.match(result.protectedText, /\[FINANCIAL_IDENTIFIER_REMOVED\]/);
   assert.equal(result.risk, "critical");
 });
+
+test("protects customer delivery identity, phone, address, and naira amounts", () => {
+  const input = "I want to send this customer’s details to my delivery guy: Ada Nnamdi, 24 Palm Crescent, Ikeja, 0800-555-0181. She ordered two laptops worth ₦1.4 million and already paid ₦900,000. Write a short message for me.";
+  const result = analyzePrompt(input);
+  assert.doesNotMatch(result.protectedText, /Ada Nnamdi|24 Palm Crescent|Ikeja|0800-555-0181|₦1\.4 million|₦900,000/);
+  assert.match(result.protectedText, /\[PERSON_1\]/);
+  assert.match(result.protectedText, /\[ADDRESS_1\]/);
+  assert.match(result.protectedText, /\[PHONE_1\]/);
+  assert.match(result.protectedText, /\[FINANCIAL_AMOUNT_1\]/);
+  assert.match(result.protectedText, /\[FINANCIAL_AMOUNT_2\]/);
+  assert.match(result.protectedText, /two laptops/);
+  assert.match(result.protectedText, /Write a short message/);
+});
