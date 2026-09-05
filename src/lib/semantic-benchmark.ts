@@ -15,6 +15,14 @@ const personal = [
   "I am grieving and need emotional support without sharing my identity.",
   "Explain this sensitive medical test result without exposing me.",
   "I need private counselling advice about trauma and anxiety.",
+  "Abeg, I no wan make anybody know say I dey attend therapy for panic attacks.",
+  "Mo fẹ́ ìmọ̀ràn nípa ìlera ọpọlọ mi, but keep my treatment private.",
+  "Ina bukatar shawara game da magani na, kada a bayyana ko ni waye.",
+  "Biko help me understand my medical result without exposing my identity.",
+  "My fertility treatment and family pressure are deeply personal to me.",
+  "I dey struggle with addiction recovery and I need confidential support.",
+  "Please discuss my disability and medication without identifying me.",
+  "My private debt and delayed wages are affecting my mental health.",
 ];
 
 const confidential = [
@@ -26,6 +34,14 @@ const confidential = [
   "We are privately developing an invention before the public launch.",
   "Do not expose our confidential pricing and acquisition strategy.",
   "The proprietary waste-sorting process must remain inside the company.",
+  "Abeg review this startup idea; the method never launch and na secret.",
+  "Our unreleased fintech product uses a confidential fraud-scoring method.",
+  "Mo ní business idea tuntun; please protect the unique mechanism.",
+  "Wannan sabon tsarin kasuwanci sirri ne and competitors must not see it.",
+  "Biko analyse our private prototype without revealing how the engine works.",
+  "The customer-acquisition numbers and pricing experiment are not public.",
+  "I want feedback on an unpublished research discovery before filing a patent.",
+  "Keep our internal model architecture and launch sequence confidential.",
 ];
 
 const retaliation = [
@@ -37,6 +53,14 @@ const retaliation = [
   "The director threatened to sack me after I reported corruption.",
   "How should I preserve evidence of abuse and employer retaliation?",
   "I was falsely accused of fraud during a workplace dispute.",
+  "My oga threaten to sack me because I asked for three months salary.",
+  "Dem accuse me wrongly after I report missing pension payments.",
+  "Ọ̀gá mi ń halẹ̀ mọ́ mi since I complained about unpaid overtime.",
+  "Shugabana ya yi min barazana after I reported workplace fraud.",
+  "Onye isi m accused me of theft when I challenged the payroll error.",
+  "How can I answer a false misconduct claim without taking revenge?",
+  "HR is intimidating witnesses after we reported harassment.",
+  "Help me document retaliation after a protected workplace complaint.",
 ];
 
 const affiliation = [
@@ -48,6 +72,14 @@ const affiliation = [
   "My employer and job title together may reveal who I am.",
   "I am a patient of a specific hospital discussing private records.",
   "My school affiliation should not appear in the external request.",
+  "I work for one named Lagos company and the complaint could identify me.",
+  "My church group and political opinion together can reveal who I am.",
+  "Na only me be lab technician for this clinic, so hide the affiliation.",
+  "Mo jẹ́ akẹ́kọ̀ọ́ ní ilé-ẹ̀kọ́ kan and this disciplinary issue is private.",
+  "Ina aiki a wani asibiti; my role and workplace must remain hidden.",
+  "Abụ m onye ọrụ at a named firm and this salary dispute is sensitive.",
+  "My patient relationship with a specialist centre could identify me.",
+  "Protect the named union, my job title and the branch where I work.",
 ];
 
 const benign = [
@@ -67,6 +99,22 @@ const benign = [
   "How do medical schools train doctors in general?",
   "Describe encryption without using any real credentials.",
   "Write a public announcement for a community event.",
+  "Explain why people may choose therapy in general.",
+  "What does confidential business information mean?",
+  "Translate the word retaliation into plain English.",
+  "List public universities in Nigeria without discussing any student.",
+  "Abeg give me a general recipe for moi moi.",
+  "Explain salary negotiation without using anybody's private details.",
+  "Describe how delivery companies route packages generally.",
+  "Write a fictional clinic scene with completely imaginary characters.",
+  "Kọ àlàyé gbogbogbò nípa bí ilé-ẹ̀kọ́ ṣe ń ṣiṣẹ́.",
+  "Bayyana yadda asibiti ke aiki in general terms.",
+  "Explain what a bank transfer reference is used for.",
+  "Create a public launch checklist for an already announced product.",
+  "Compare privacy laws at a high level without personal cases.",
+  "What makes a strong password? Do not include a real password.",
+  "Explain face recognition technology without processing anyone's face.",
+  "Give general advice on resolving workplace disagreements peacefully.",
 ];
 
 function labelled(category: SemanticCategory, rows: string[], prefix: string): SemanticBenchmarkCase[] {
