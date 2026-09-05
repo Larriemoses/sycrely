@@ -42,7 +42,7 @@ The first classifier is a tiny, dependency-free character n-gram similarity engi
 
 The mock endpoint originally displayed the capsule's 180-character task summary, which made longer protected requests appear incomplete. It now reads the complete protected prompt from `safeContext.protectedPrompt`; the private original and alias map still remain local. Sycrely also adopted black, charcoal, and privacy green as its default product theme, with a persistent Light/Dark control for user preference and accessibility.
 
-The color system was subsequently refined so green controls use near-black text instead of white, while white or light surfaces use charcoal/navy rather than green text. Active modes, send actions, primary actions, shields, and assistant avatars follow the same contrast rule.
+The color system was subsequently refined by theme: green controls use white text in Light mode and near-black text against the brighter green in Dark mode. Active modes, send actions, primary actions, shields, and assistant avatars follow the same theme-aware contrast rule.
 
 ## Current limitations
 
