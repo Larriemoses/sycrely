@@ -109,3 +109,7 @@ A long unpaid-salary test exposed two boundary defects. The phrases “his name 
 ## Isolated browser model laboratory
 
 An experimental `/model-lab` page now loads the first multilingual NER candidate only after an explicit action. It accepts three fixed synthetic prompts rather than user text, caches model assets in the browser, uses the WebAssembly execution path, and displays first-load time, inference time, entity spans and confidence scores. The lab is visibly separated from Private Mode and cannot approve or send a conversation. Optional server-side ONNX and protobuf dependency build scripts remain disabled because this experiment requires only browser inference.
+
+## Model and application security baseline
+
+The experimental model is pinned to an immutable repository revision and a recorded SHA-256 artifact digest. Direct model tooling is exactly version-pinned. Production policy now explicitly requires self-hosting, digest verification, Worker isolation, no prompt telemetry and no cloud fallback. Route-specific security headers keep the main conversation page on same-origin browser connections while granting only the isolated lab the temporary origins needed to download its public candidate. Automated tests reject common analytics clients and unexpected browser fetch calls in the private conversation UI. A full threat model records supply-chain, runtime, application-egress and remaining operational risks.
