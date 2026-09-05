@@ -97,3 +97,7 @@ A separate 48-case semantic benchmark was added with 32 sensitive paraphrases an
 ## Classifier foundation expansion
 
 The local-model phase now has a stable 19-label span vocabulary and automated policy invariants. The semantic challenge set doubled from 48 to 96 cases with Nigerian English, Pidgin, Yoruba-, Hausa-, and Igbo-mixed phrasing plus harder harmless controls. The current character n-gram baseline achieves only 57.81% category recall and 78.72% measured precision on this wider set. This honest failure establishes why an on-device language model is necessary and gives candidate models a fixed gate: at least 90% recall and precision, offline execution, and no raw prompt telemetry.
+
+## On-device candidate screening
+
+The first candidate screen compared browser-ready multilingual BERT and DistilBERT NER exports, multilingual GLiNER, and a planned distilled Sycrely encoder. DistilBERT is the first technical benchmark because it already supports Transformers.js, but its approximately 135 MB quantized model is over the mobile target and recognizes only person, organization, location, and date entities. The approximately 1.16 GB GLiNER artifact was rejected for the web MVP despite flexible labels. The likely production path is therefore a much smaller, commercially compatible encoder fine-tuned for Sycrely's vocabulary, exported to ONNX and served as a pinned local application asset.
