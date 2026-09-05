@@ -43,6 +43,7 @@ const detectors: Detector[] = [
   { category: "nigeria-business-id", label: "Nigerian business registration number", severity: "high", regex: /\b((?:CAC\s+)?(?:RC|BN|IT)(?:\s+(?:number|no\.?))?(?:\s+is)?\s*[:#=-]?\s*)(\d{4,10})\b/gi, token: "BUSINESS_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
   { category: "nigeria-tax-id", label: "Nigerian tax identifier", severity: "critical", regex: /\b((?:my\s+)?(?:TIN|tax identification number|tax ID)(?:\s+is)?\s*[:#=-]?\s*)([A-Z0-9-]{8,20})\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
   { category: "nigeria-financial-id", label: "Nigerian bank account number", severity: "critical", regex: /\b((?:my\s+)?(?:bank\s+)?(?:account|acct)(?:\s+(?:number|no\.?))?(?:\s+is)?\s*[:#=-]?\s*)(\d{10})\b/gi, token: "FINANCIAL_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
+  { category: "finance", label: "Private account reference", severity: "critical", regex: /\b((?:from|to|my|the)?\s*(?:bank\s+)?(?:account|acct)(?:\s+(?:reference|ref\.?|number|no\.?))?(?:\s+is)?\s*[:#=-]?\s*)([A-Z0-9]{2,}(?:-[A-Z0-9]{2,})+)\b/gi, token: "FINANCIAL_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
   { category: "education-id", label: "Student or matriculation number", severity: "high", regex: /\b((?:my\s+)?(?:matric(?:ulation)?|student)(?:\s+(?:number|no\.?|ID))?(?:\s+is)?\s*[:#=-]?\s*)([A-Z0-9][A-Z0-9/-]{4,24})\b/gi, token: "EDUCATION_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
   { category: "email", label: "Email address", severity: "high", regex: /\b[A-Z0-9._%+-]+\s*@\s*[A-Z0-9.-]+\s*\.\s*[A-Z]{2,}\b/gi, token: "EMAIL", restorable: true },
   { category: "network", label: "IP address", severity: "high", regex: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g, token: "IP_ADDRESS", restorable: true },
@@ -60,7 +61,7 @@ const detectors: Detector[] = [
   { category: "organization", label: "Private organization name", severity: "high", regex: /\b(owns|founded|runs|leads)\s+([A-Z][\w&'-]*(?:\s+[A-Z][\w&'-]*){0,5})/g, token: "ORGANIZATION", captureGroup: 2, keepPrefix: 1, restorable: true },
   { category: "organization", label: "Explicitly fictional private organization", severity: "high", regex: /\b[A-Z][\w&'-]*(?:\s+[A-Z][\w&'-]*){0,8}\s+\(fictional\)/g, token: "ORGANIZATION", restorable: true },
   { category: "location", label: "Named location", severity: "high", regex: /\b((?:company|office|workplace|business|employer)\s+(?:which\s+)?is\s+located\s+in|(?:company|office|workplace|business|employer)\s+(?:which\s+)?is\s+Located\s+in)\s+([A-Z][\w'.-]+(?:\s+[A-Z][\w'.-]+){0,2}(?:,\s*[A-Z][\w'.-]+(?:\s+[A-Z][\w'.-]+){0,2})?)/g, token: "LOCATION", captureGroup: 2, keepPrefix: 1, restorable: true },
-  { category: "address", label: "Street address", severity: "high", regex: /\b\d{1,6}\s+(?:[A-Z][\w.-]+\s+){0,4}(?:Street|St|Road|Rd|Avenue|Ave|Lane|Ln|Drive|Dr|Boulevard|Blvd)\b/gi, token: "ADDRESS", restorable: true },
+  { category: "address", label: "Street address", severity: "high", regex: /\b\d{1,6}\s+(?:[A-Z][\w.-]+\s+){0,4}(?:Street|St|Road|Rd|Avenue|Ave|Lane|Ln|Drive|Dr|Boulevard|Blvd|Crescent|Cres|Close|Court|Way|Place)(?:,\s*[A-Z][\p{L}\p{M}'.-]+(?:\s+[A-Z][\p{L}\p{M}'.-]+){0,2})?/gu, token: "ADDRESS", restorable: true },
   { category: "government-id", label: "Government identifier", severity: "critical", regex: /\b(?:SSN|NIN|passport(?: number)?|national id)\s*[:#-]?\s*[A-Z0-9-]{5,}\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED" },
   { category: "government-id", label: "Passport or travel-document reference", severity: "critical", regex: /\bPPT-FICT-[A-Z0-9-]+\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED" },
   { category: "finance", label: "Private financial reference", severity: "critical", regex: /\b(?:ACCT|WALLET)-TEST-[A-Z0-9-]+\b/gi, token: "FINANCIAL_IDENTIFIER_REMOVED" },
@@ -71,6 +72,7 @@ const detectors: Detector[] = [
   { category: "finance", label: "Payment card pattern", severity: "critical", regex: /\b(?:4(?:[ -]*\d){15}|5[1-5](?:[ -]*\d){14})\b/g, token: "FINANCIAL_IDENTIFIER_REMOVED" },
   { category: "phone", label: "Phone number", severity: "high", regex: /(?<!\w)\+\d[\d\s().-]{8,}\d(?!\w)/g, token: "PHONE", restorable: true },
   { category: "phone", label: "Phone number", severity: "high", regex: /\b((?:my\s+)?(?:phone|mobile)(?:\s+number)?(?:\s+is)?|call me(?:\s+on)?|contact me(?:\s+on)?|reach me at)\s*[:=-]?\s*(0\d[\d\s().-]{8,}\d)\b/gi, token: "PHONE", captureGroup: 2, keepPrefix: 1, restorable: true },
+  { category: "phone", label: "Phone number", severity: "high", regex: /\b((?:my|the)\s+number(?:\s+is)?|number\s*[:=-])\s*(0\d[\d\s().-]{8,}\d)\b/gi, token: "PHONE", captureGroup: 2, keepPrefix: 1, restorable: true },
 ];
 
 const personalSupport = /\b(therapy|therapist|counsell?ing|emotional support|mental health|anxiety|depression|grief|trauma|what i(?:'m| am) facing)\b/i;

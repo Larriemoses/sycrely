@@ -78,3 +78,14 @@ test("does not flag an ordinary public question as a combination risk", () => {
   assert.equal(result.combinationRisk.level, "none");
   assert.equal(result.findings.some((finding) => finding.category === "combination-risk"), false);
 });
+
+test("protects every direct identifier in a Nigerian landlord-payment request", () => {
+  const input = "Help me write a message to my landlord. My name is Daniel Eze, I stay at 14 Test Crescent, Ikeja, and my number is 0800-555-0172. I already sent him ₦300,000 from account TEST-88219 last week but he said he hasn't seen it.";
+  const result = analyzePrompt(input);
+  assert.doesNotMatch(result.protectedText, /Daniel Eze|14 Test Crescent|Ikeja|0800-555-0172|TEST-88219/);
+  assert.match(result.protectedText, /\[PERSON_1\]/);
+  assert.match(result.protectedText, /\[ADDRESS_1\]/);
+  assert.match(result.protectedText, /\[PHONE_1\]/);
+  assert.match(result.protectedText, /\[FINANCIAL_IDENTIFIER_REMOVED\]/);
+  assert.equal(result.risk, "critical");
+});
