@@ -62,6 +62,12 @@ A live hostel-recommendation test exposed two weaknesses of free-model routing: 
 
 The color audit also moved Dark mode from green-tinted surfaces to neutral black and charcoal. Green is now reserved for privacy indicators and primary actions. Primary action text is white in both themes, while secondary buttons have explicit readable colors for Light, Dark, hover, and disabled states.
 
+## Landlord-payment privacy regression and repository naming
+
+A screenshot of the live Privacy Trace revealed that a Nigerian landlord-message prompt protected the person's name but missed a Crescent street address, a locally formatted phone number introduced as “my number,” and an alphanumeric account reference. The detector catalogue now covers these forms, including common address suffixes and an optional locality following the street. A permanent regression test uses the complete reported scenario and requires all four direct identifiers to disappear while preserving the payment-dispute purpose. Failed provider calls are now labelled as delivery notices, and their trace reports a failed external attempt instead of incorrectly identifying the response as Mock mode.
+
+The GitHub repository was renamed from the misspelled `secrely` to the product's canonical spelling, `sycrely`.
+
 ## Current limitations
 
 - The semantic baseline has a small synthetic reference set and is not production-ready.
