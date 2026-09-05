@@ -29,6 +29,7 @@ The provider does **not** receive the user's local placeholder map or original p
 - Context-aware protection for Nigerian NIN, BVN, VIN, CAC registration, tax, bank-account, and matriculation identifiers
 - A dedicated adversarial gate covering disguised secrets and benign lookalikes, with measured false-positive and retained-context baselines
 - A dependency-free local semantic-classifier baseline with confidence, timing, transparent review output, and rule-only fallback
+- A separate 48-case semantic calibration benchmark and replaceable classifier interface
 - Mandatory preview for high-sensitivity prompts
 - Exact provider-bound prompt display
 - Privacy trace showing what crossed the boundary

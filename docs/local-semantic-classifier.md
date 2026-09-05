@@ -39,3 +39,29 @@ A future browser model must preserve the same basic contract: local input, categ
 - No prompt telemetry, raw examples, or model inputs leave the device.
 - Users can see whether a decision came from rules, the classifier, or both.
 
+## Calibration benchmark
+
+The first separate semantic benchmark contains 48 distinct cases: eight examples for each of the four sensitive categories and 16 benign controls. It is kept separate from the classifier's small reference set.
+
+Baseline 0.1.0 results:
+
+- 26 correct sensitive classifications out of 32;
+- 81.25% category recall;
+- 83.87% measured precision;
+- five benign prompts receiving an advisory classification;
+- approximately 1.7 ms average classification time on the development machine.
+
+The main confusion areas are general descriptions of hospitals, workplace regulation, public marketing, definitions of allegation, and generic business plans. The classifier therefore remains advisory at lower confidence. Exact identifiers continue to be handled by deterministic rules.
+
+## Proposed mobile budget
+
+A browser-model candidate should initially target:
+
+- no more than 25 MB compressed download;
+- no more than 150 MB peak additional memory on a representative mobile browser;
+- under 100 ms median classification time after loading;
+- offline operation after the model is cached;
+- at least 90% recall and 90% precision on a larger held-out set;
+- no regression across the existing privacy, utility, and false-positive gates.
+
+These are engineering targets rather than current measured guarantees. They may be revised after testing on real low- and mid-range devices.
