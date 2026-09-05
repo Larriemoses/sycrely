@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { analyzePrompt, restoreAliases, type AliasEntry, type PrivacyAnalysis } from "@/lib/privacy";
 import { buildTaskCapsule, type TaskCapsule } from "@/lib/capsule";
 import { createVault, deleteSession, hasVault, loadSession, saveSession, unlockVault } from "@/lib/vault";
@@ -71,7 +72,7 @@ function SettingsModal({ preference, onChange, onClose }: { preference:ThemePref
     {value:"dark",title:"Dark",description:"Black, charcoal and Sycrely green."},
     {value:"light",title:"Light",description:"Bright surfaces with strong readable contrast."},
   ];
-  return <div className="modal-backdrop"><section className="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title"><div className="settings-heading"><div><p className="eyebrow">PREFERENCES</p><h2 id="settings-title">Settings</h2></div><button className="icon-button" onClick={onClose} aria-label="Close settings">×</button></div><div className="settings-section"><h3>Appearance</h3><p className="muted">Choose how Sycrely looks on this device.</p><div className="theme-options">{options.map(option=><button key={option.value} className={`theme-option ${preference===option.value?"selected":""}`} onClick={()=>onChange(option.value)}><span className={`theme-swatch ${option.value}`}></span><span><strong>{option.title}</strong><small>{option.description}</small></span>{preference===option.value&&<b>✓</b>}</button>)}</div></div><div className="settings-note"><Shield small/><span>Appearance preferences stay in this browser.</span></div></section></div>;
+  return <div className="modal-backdrop"><section className="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title"><div className="settings-heading"><div><p className="eyebrow">PREFERENCES</p><h2 id="settings-title">Settings</h2></div><button className="icon-button" onClick={onClose} aria-label="Close settings">×</button></div><div className="settings-section"><h3>Appearance</h3><p className="muted">Choose how Sycrely looks on this device.</p><div className="theme-options">{options.map(option=><button key={option.value} className={`theme-option ${preference===option.value?"selected":""}`} onClick={()=>onChange(option.value)}><span className={`theme-swatch ${option.value}`}></span><span><strong>{option.title}</strong><small>{option.description}</small></span>{preference===option.value&&<b>✓</b>}</button>)}</div></div><div className="settings-section developer-section"><h3>Development</h3><p className="muted">Evaluate the experimental browser model using synthetic prompts only.</p><Link className="secondary lab-link" href="/model-lab">Open local model lab →</Link></div><div className="settings-note"><Shield small/><span>Appearance preferences stay in this browser.</span></div></section></div>;
 }
 
 export default function Home() {
