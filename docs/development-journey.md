@@ -38,6 +38,10 @@ A dedicated suite tests spaced and punctuated identifiers, obfuscated email addr
 
 The first classifier is a tiny, dependency-free character n-gram similarity engine. It runs synchronously on-device and returns categories, confidence values, a version, and timing. It is not presented as a production neural model. High-confidence results may add a review finding; low-confidence results remain advisory. Any classifier failure falls back to deterministic rules.
 
+## Complete mock boundary and product theme
+
+The mock endpoint originally displayed the capsule's 180-character task summary, which made longer protected requests appear incomplete. It now reads the complete protected prompt from `safeContext.protectedPrompt`; the private original and alias map still remain local. Sycrely also adopted black, charcoal, and privacy green as its default product theme, with a persistent Light/Dark control for user preference and accessibility.
+
 ## Current limitations
 
 - The semantic baseline has a small synthetic reference set and is not production-ready.
@@ -54,4 +58,3 @@ The first classifier is a tiny, dependency-free character n-gram similarity engi
 4. Integrate OpenRouter with server-only credentials after the local boundary is stable.
 5. Add quotas, managed credits, model policy, rate limiting, and abuse controls.
 6. Add grounded response verification and uncertainty indicators.
-
