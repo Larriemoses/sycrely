@@ -68,6 +68,12 @@ A screenshot of the live Privacy Trace revealed that a Nigerian landlord-message
 
 The GitHub repository was renamed from the misspelled `secrely` to the product's canonical spelling, `sycrely`.
 
+## Customer-delivery privacy regression
+
+A delivery-message test revealed that an unlabelled Nigerian mobile number could pass through when written after customer details. The same scenario also contained a customer's name and exact naira amounts. The local detector catalogue now protects customer, client, patient, tenant, employee, and recipient identities when introduced as names or details; common Nigerian mobile formats; and exact naira amounts. A permanent regression test requires all four sensitive fields to be replaced while preserving the useful request, item description, and message-writing instruction.
+
+Provider privacy controls are routing requirements, not end-to-end encrypted inference. `ZDR required` asks OpenRouter to use only an endpoint marked for zero data retention, while `data collection denied` excludes endpoints marked as collecting prompts for training or similar use. The selected provider must still read the protected capsule in memory to answer it, and routing or usage metadata may still exist. Sycrely therefore sends only the locally transformed version and must never describe these controls as making the provider unable to see that version.
+
 ## Current limitations
 
 - The semantic baseline has a small synthetic reference set and is not production-ready.
