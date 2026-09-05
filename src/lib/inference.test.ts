@@ -72,13 +72,65 @@ test("live mode sends only protected content with privacy routing requirements",
   assert.match(outboundBody, /\[PERSON_1\]/);
   assert.doesNotMatch(outboundBody, /originalText|aliasMap|Olaniyi/);
   const body = JSON.parse(outboundBody);
+  assert.match(body.messages[0].content, /complete working request/);
   assert.deepEqual(body.provider, {
     zdr: true,
     data_collection: "deny",
     require_parameters: true,
     allow_fallbacks: true,
   });
+  assert.deepEqual(body.reasoning, { effort: "low", exclude: true });
   assert.equal((outboundHeaders as Record<string, string>).Authorization, "Bearer secret");
+});
+
+test("retries when a reasoning-heavy provider returns no visible answer", async () => {
+  let calls = 0;
+  const fetcher: typeof fetch = async () => {
+    calls += 1;
+    return new Response(JSON.stringify({
+      model: "vendor/approved",
+      choices: [{ message: { content: calls === 1 ? "" : "Compare location, safety, power, water, reviews, and total cost." } }],
+      usage: { prompt_tokens: 20, completion_tokens: 20, total_tokens: 40 },
+    }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  const result = await runInference(protectedRequest, {
+    environment: {
+      SYCRELY_INFERENCE_MODE: "live",
+      OPENROUTER_API_KEY: "secret",
+      OPENROUTER_MODEL: "vendor/approved",
+      SYCRELY_ALLOWED_MODELS: "vendor/approved",
+    },
+    fetcher,
+  });
+  assert.equal(calls, 2);
+  assert.match(result.message, /location, safety/);
+});
+
+test("retries a weak-model claim that protected context is missing", async () => {
+  let calls = 0;
+  const fetcher: typeof fetch = async () => {
+    calls += 1;
+    const content = calls === 1
+      ? "I don't have the protected context or supplied capsule data needed to answer."
+      : "Start by comparing hostel security, distance, total cost, utilities, reviews, and transport. Which Nigerian city and budget range do you prefer?";
+    return new Response(JSON.stringify({
+      model: "vendor/approved",
+      choices: [{ message: { content } }],
+      usage: { prompt_tokens: 20, completion_tokens: 20, total_tokens: 40 },
+    }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  const result = await runInference(protectedRequest, {
+    environment: {
+      SYCRELY_INFERENCE_MODE: "live",
+      OPENROUTER_API_KEY: "secret",
+      OPENROUTER_MODEL: "vendor/approved",
+      SYCRELY_ALLOWED_MODELS: "vendor/approved",
+    },
+    fetcher,
+  });
+  assert.equal(calls, 2);
+  assert.match(result.message, /hostel security/);
+  assert.doesNotMatch(result.message, /capsule|protected context/i);
 });
 
 test("upstream error bodies are not exposed", async () => {
@@ -93,6 +145,6 @@ test("upstream error bodies are not exposed", async () => {
       },
       fetcher,
     }),
-    (error: Error) => !error.message.includes("sensitive upstream echo") && error.message.includes("429"),
+    (error: Error) => !error.message.includes("sensitive upstream echo") && error.message.includes("temporarily rate-limited"),
   );
 });

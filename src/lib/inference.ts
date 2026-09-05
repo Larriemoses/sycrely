@@ -75,24 +75,27 @@ export async function runInference(
   if (configuration.siteUrl) headers["HTTP-Referer"] = configuration.siteUrl;
 
   try {
-    const response = await (options.fetcher ?? fetch)("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers,
-      signal: controller.signal,
-      body: JSON.stringify({
+    const systemInstruction = "You answer protected requests for Sycrely. The protected request below is the complete working request: answer it directly using every useful detail it contains. A placeholder means only that an unnecessary identity was hidden; it does not mean the task or capsule is missing. Never say that protected context or capsule data was not supplied. Do not guess, reconstruct, or request the real values behind placeholders such as [PERSON_1]. Do not address the user by a placeholder. If a recommendation needs genuinely missing preferences such as budget or city, first give useful general guidance and then ask a short follow-up question. Never mention Sycrely's internal capsule in the answer. State important uncertainty.";
+    const initialMessages = [
+      { role: "system", content: systemInstruction },
+      {
+        role: "user",
+        content: `Requested answer: ${request.requestedOutput}\nPrivacy constraints:\n- ${request.constraints.join("\n- ")}\n\nProtected request (answer this directly):\n${request.protectedPrompt}`,
+      },
+    ];
+    const callProvider = async (messages: Array<{ role: string; content: string }>) => {
+      let response: Response | undefined;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        response = await (options.fetcher ?? fetch)("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers,
+          signal: controller.signal,
+          body: JSON.stringify({
         model: configuration.model,
-        messages: [
-          {
-            role: "system",
-            content: "You answer protected requests for Sycrely. Use only the supplied protected context. Do not guess, reconstruct, or request the real values behind placeholders such as [PERSON_1]. Preserve placeholders in your answer. Be useful, direct, and state important uncertainty.",
-          },
-          {
-            role: "user",
-            content: `Requested answer: ${request.requestedOutput}\nPrivacy constraints:\n- ${request.constraints.join("\n- ")}\n\nProtected request:\n${request.protectedPrompt}`,
-          },
-        ],
+        messages,
         temperature: 0.3,
-        max_tokens: 900,
+        max_tokens: 1_200,
+        reasoning: { effort: "low", exclude: true },
         stream: false,
         provider: {
           zdr: true,
@@ -100,18 +103,38 @@ export async function runInference(
           require_parameters: true,
           allow_fallbacks: true,
         },
-      }),
-    });
-
-    if (!response.ok) throw new Error(`OpenRouter request failed with status ${response.status}.`);
-    const payload = (await response.json()) as {
+          }),
+        });
+        if (response.status !== 429 || attempt === 1) break;
+        await new Promise((resolve) => setTimeout(resolve, options.fetcher ? 0 : 1_500));
+      }
+      if (!response?.ok) {
+        if (response?.status === 429) throw new Error("OpenRouter free capacity is temporarily rate-limited. Please try again shortly.");
+        throw new Error(`OpenRouter request failed with status ${response?.status ?? "unknown"}.`);
+      }
+      return (await response.json()) as {
       model?: unknown;
       provider?: unknown;
       choices?: Array<{ message?: { content?: unknown } }>;
       usage?: { prompt_tokens?: unknown; completion_tokens?: unknown; total_tokens?: unknown };
+      };
     };
-    const message = payload.choices?.[0]?.message?.content;
-    if (typeof message !== "string" || !message.trim()) throw new Error("OpenRouter returned no usable answer.");
+
+    let payload = await callProvider(initialMessages);
+    let message = payload.choices?.[0]?.message?.content;
+    const falseMissingContext = /(?:don'?t have|without|not (?:been )?supplied|missing).{0,45}(?:protected context|capsule data|supplied capsule)/i;
+    if (typeof message !== "string" || !message.trim() || falseMissingContext.test(message)) {
+      const previousAnswer = typeof message === "string" && message.trim()
+        ? [{ role: "assistant", content: message }]
+        : [];
+      payload = await callProvider([
+        ...initialMessages,
+        ...previousAnswer,
+        { role: "user", content: "Return a visible, concise final answer now. The protected request above is complete and sufficient. Answer its actual task, not your reasoning process. Do not mention missing context, capsule data, privacy processing, or placeholders. Give useful general guidance and ask only for preferences that truly affect the recommendation." },
+      ]);
+      message = payload.choices?.[0]?.message?.content;
+      if (typeof message !== "string" || !message.trim()) throw new Error("OpenRouter returned no usable corrected answer.");
+    }
 
     const number = (value: unknown) => (typeof value === "number" && Number.isFinite(value) ? value : 0);
     return {
