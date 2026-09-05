@@ -27,6 +27,7 @@ The provider does **not** receive the user's local placeholder map or original p
 - Context-aware handling that preserves useful topics while protecting the identities or confidential assets attached to them
 - Local combination-risk scoring that warns when several ordinary details could identify someone together
 - Context-aware protection for Nigerian NIN, BVN, VIN, CAC registration, tax, bank-account, and matriculation identifiers
+- A dedicated adversarial gate covering disguised secrets and benign lookalikes, with measured false-positive and retained-context baselines
 - Mandatory preview for high-sensitivity prompts
 - Exact provider-bound prompt display
 - Privacy trace showing what crossed the boundary
@@ -81,9 +82,9 @@ pnpm build
 
 ## Next milestones
 
-1. Adversarial privacy tests and false-positive measurement
+1. Compact on-device semantic classification
 2. Additional country-specific identifier packs
-3. Compact on-device semantic classification
+3. Expanded adversarial and false-positive datasets
 4. OpenRouter integration with server-side secret isolation
 5. Usage accounting, model policy, rate limits, and managed credits
 6. Grounded answer verification and uncertainty indicators
