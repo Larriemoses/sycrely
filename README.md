@@ -31,6 +31,7 @@ The provider does **not** receive the user's local placeholder map or original p
 - Save-encrypted and delete-now session endings
 - Responsive desktop and mobile-browser interface
 - A 100-prompt synthetic privacy benchmark with automated checks for both privacy and retained usefulness
+- A 200-prompt organization-identification benchmark covering 25 invented organizations and eight relationship forms
 - A mock inference route that rejects forbidden original-data fields
 
 The mock response is deliberate. OpenRouter will be integrated after the provider boundary, secret handling, quotas, and model policy are ready.
@@ -91,3 +92,5 @@ pnpm build
 Early private prototype. Do not use it yet for production secrets, regulated information, or safety-critical decisions.
 
 See [Privacy Rule Catalogue](docs/privacy-rule-catalog.md) for the current local taxonomy, handling decisions, limitations, research basis, and expansion backlog.
+
+See [Organization Identification Benchmark](docs/organization-identification-benchmark.md) for the dedicated entity-relationship test results.
