@@ -101,3 +101,7 @@ The local-model phase now has a stable 19-label span vocabulary and automated po
 ## On-device candidate screening
 
 The first candidate screen compared browser-ready multilingual BERT and DistilBERT NER exports, multilingual GLiNER, and a planned distilled Sycrely encoder. DistilBERT is the first technical benchmark because it already supports Transformers.js, but its approximately 135 MB quantized model is over the mobile target and recognizes only person, organization, location, and date entities. The approximately 1.16 GB GLiNER artifact was rejected for the web MVP despite flexible labels. The likely production path is therefore a much smaller, commercially compatible encoder fine-tuned for Sycrely's vocabulary, exported to ONNX and served as a pinned local application asset.
+
+## Former-employer message regression
+
+A long unpaid-salary test exposed two boundary defects. The phrases “his name is” and “the company is” did not enter the identity rules, and the interface displayed provider placeholders instead of restoring safe aliases after the response returned. Sycrely now protects third-person named identities, contextually introduced company names, exact salary amounts, Nigerian phone numbers, and an identifying job role in this scenario. Provider output is rehydrated from the alias map only in the browser. A punctuation regression test also prevents a sentence-ending full stop from becoming part of a financial alias.

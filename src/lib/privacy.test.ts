@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { analyzePrompt } from "./privacy.ts";
+import { analyzePrompt, restoreAliases } from "./privacy.ts";
 
 test("removes credentials and marks critical risk", () => {
   const result = analyzePrompt("My API key: sk-example-secret-123456789");
@@ -101,4 +101,23 @@ test("protects customer delivery identity, phone, address, and naira amounts", (
   assert.match(result.protectedText, /\[FINANCIAL_AMOUNT_2\]/);
   assert.match(result.protectedText, /two laptops/);
   assert.match(result.protectedText, /Write a short message/);
+});
+
+test("protects a former boss, company, role, phone and salary amounts", () => {
+  const prompt = "I need help writing a message to my former boss because he still hasn’t paid me for almost four months. His name is Kunle Arowolo and the company is Green Basket Media Ltd. I was working there as a content manager and my salary was ₦280,000 every month. He currently owes me ₦1,120,000. I’ve called him several times on 0800-555-0138 but now he barely responds. The annoying part is that I know two other staff are also being owed. I have screenshots of our conversations and the transfers they made when they used to pay us. Please write something serious I can send him tonight because I’m tired of hearing ‘next week’ every time.";
+  const result = analyzePrompt(prompt);
+  assert.doesNotMatch(result.protectedText, /Kunle Arowolo|Green Basket Media Ltd|content manager|₦280,000|₦1,120,000|0800-555-0138/i);
+  assert.match(result.protectedText, /\[PERSON_1\]/);
+  assert.match(result.protectedText, /\[ORGANIZATION_1\]/);
+  assert.match(result.protectedText, /\[JOB_ROLE_1\]/);
+  assert.match(result.protectedText, /\[FINANCIAL_AMOUNT_1\]/);
+  assert.match(result.protectedText, /\[FINANCIAL_AMOUNT_2\]/);
+  assert.match(result.protectedText, /\[PHONE_1\]/);
+  assert.match(result.protectedText, /almost four months|screenshots|Please write something serious/i);
+});
+
+test("restores provider placeholders only after the answer returns locally", () => {
+  const result = analyzePrompt("His name is Kunle Arowolo and my salary was ₦280,000.");
+  const providerAnswer = "Send [PERSON_1] a request for [FINANCIAL_AMOUNT_1].";
+  assert.equal(restoreAliases(providerAnswer, result.aliases), "Send Kunle Arowolo a request for ₦280,000.");
 });
