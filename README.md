@@ -4,7 +4,7 @@
 
 Sycrely is a privacy-first AI gateway that helps people use frontier AI models without sending unnecessary personal, confidential, or identifying context to the model provider.
 
-This repository contains the first mobile-first web prototype. It demonstrates the core privacy boundary before OpenRouter or another production inference provider is connected.
+This repository contains the first mobile-first web prototype. It demonstrates the core privacy boundary and includes an opt-in OpenRouter connection for controlled live testing.
 
 ## How it works
 
@@ -37,9 +37,12 @@ The provider does **not** receive the user's local placeholder map or original p
 - Responsive desktop and mobile-browser interface
 - A 100-prompt synthetic privacy benchmark with automated checks for both privacy and retained usefulness
 - A 200-prompt organization-identification benchmark covering 25 invented organizations and eight relationship forms
-- A mock inference route that rejects forbidden original-data fields
+- An inference route that rejects forbidden original-data fields
+- Safe-by-default Mock mode and an explicit, allowlisted OpenRouter Live mode
+- OpenRouter zero-data-retention and no-data-collection routing requirements
+- Model and token-usage delivery receipts in the interface
 
-The mock response is deliberate. OpenRouter will be integrated after the provider boundary, secret handling, quotas, and model policy are ready.
+Mock remains the default so the prototype cannot create accidental AI costs. Live mode is intended for controlled development only; quotas, authentication, rate limits, and managed credits are not complete.
 
 ## Architecture boundary
 
@@ -58,7 +61,7 @@ Protected task capsule
 Sycrely inference endpoint
      |
      v
-External model provider (next phase)
+OpenRouter / external model provider (Live mode)
 ```
 
 The production privacy engine is planned as a hybrid of deterministic detectors, a compact on-device semantic classifier, and a policy engine. The current prototype implements the deterministic layer and the safety boundary.
@@ -74,6 +77,8 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+The default uses Mock mode. See [OpenRouter Integration Boundary](docs/openrouter-integration.md) to enable controlled Live mode with a server-only key.
+
 ## Verification
 
 ```bash
@@ -87,8 +92,7 @@ pnpm build
 1. Classifier calibration and browser-model candidate evaluation
 2. Additional country-specific identifier packs
 3. Expanded adversarial and false-positive datasets
-4. OpenRouter integration with server-side secret isolation
-5. Usage accounting, model policy, rate limits, and managed credits
+4. Per-user usage accounting, model policy, rate limits, and managed credits
 6. Grounded answer verification and uncertainty indicators
 7. Installable PWA and expanded accessibility testing
 
@@ -101,3 +105,5 @@ See [Privacy Rule Catalogue](docs/privacy-rule-catalog.md) for the current local
 See [Organization Identification Benchmark](docs/organization-identification-benchmark.md) for the dedicated entity-relationship test results.
 
 See [Development Journey](docs/development-journey.md) for the milestone history and [Local Semantic Classifier](docs/local-semantic-classifier.md) for the current classifier contract and limitations.
+
+See [OpenRouter Integration Boundary](docs/openrouter-integration.md) for live-inference configuration, privacy controls, and remaining production work.

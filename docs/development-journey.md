@@ -46,12 +46,16 @@ The color system was subsequently refined by theme: green controls use white tex
 
 Theme selection now defaults to the operating system preference and listens for device-theme changes. Manual System, Light, and Dark choices live in a dedicated Settings panel rather than the conversation title bar. The interface refinement also widened and stabilized the review dialog, anchored its actions during scrolling, improved long-text wrapping, reduced mobile-header crowding, and strengthened spacing and surface hierarchy across the sidebar, conversation, and composer.
 
+## Controlled OpenRouter inference
+
+The inference boundary now supports real OpenRouter answers without weakening the browser-to-server request shape. Mock mode remains the safe default and makes no external request. Live mode activates only when a server-side key, selected model, and explicit model allowlist are all configured. Requests require zero-data-retention routing and deny data-collecting providers, use a response-token limit and timeout, and return a transparent model/token receipt to the interface. Upstream error bodies are never relayed to the browser.
+
 ## Current limitations
 
 - The semantic baseline has a small synthetic reference set and is not production-ready.
 - It identifies broad context but does not reliably locate every entity span for replacement.
 - Deliberately extreme obfuscation and implicit names still produce measured misses.
-- The external inference endpoint remains a mock; no OpenRouter key is required yet.
+- Mock mode remains the default; Live mode has no authentication, per-user quota, or cost ledger yet.
 - Sycrely must not be used for production secrets or regulated decisions at this stage.
 
 ## Classifier calibration
@@ -63,6 +67,5 @@ A separate 48-case semantic benchmark was added with 32 sensitive paraphrases an
 1. Expand the calibration benchmark with Nigerian language styles and harder benign controls.
 2. Evaluate a browser-sized ONNX or Transformers.js model through the classifier adapter.
 3. Compare semantic recall, false-positive rate, latency, download size, and memory use on mobile devices.
-4. Integrate OpenRouter with server-only credentials after the local boundary is stable.
-5. Add quotas, managed credits, model policy, rate limiting, and abuse controls.
+4. Add authentication, quotas, managed credits, model policy, rate limiting, and abuse controls around Live mode.
 6. Add grounded response verification and uncertainty indicators.

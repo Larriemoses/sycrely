@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isTaskCapsule } from "@/lib/capsule";
+import { runInference } from "@/lib/inference";
 
 const forbidden = new Set([
   "originalText",
@@ -26,8 +27,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A valid protected task capsule is required." }, { status: 400 });
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 450));
-  return NextResponse.json({
-    message: `This is Sycrely's protected prototype response. I received a structured task capsule asking for: "${capsule.requestedOutput}". The complete protected prompt was: "${capsule.safeContext.protectedPrompt}". Your original prompt and local placeholder map were not included.`,
-  });
+  try {
+    const result = await runInference({
+      protectedPrompt: capsule.safeContext.protectedPrompt,
+      requestedOutput: capsule.requestedOutput,
+      constraints: capsule.constraints,
+    });
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error("Protected inference failed:", error instanceof Error ? error.message : "Unknown error");
+    return NextResponse.json({ error: "The protected AI request could not be completed." }, { status: 502 });
+  }
 }
