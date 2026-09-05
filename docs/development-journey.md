@@ -44,6 +44,8 @@ The mock endpoint originally displayed the capsule's 180-character task summary,
 
 The color system was subsequently refined by theme: green controls use white text in Light mode and near-black text against the brighter green in Dark mode. Active modes, send actions, primary actions, shields, and assistant avatars follow the same theme-aware contrast rule.
 
+Theme selection now defaults to the operating system preference and listens for device-theme changes. Manual System, Light, and Dark choices live in a dedicated Settings panel rather than the conversation title bar. The interface refinement also widened and stabilized the review dialog, anchored its actions during scrolling, improved long-text wrapping, reduced mobile-header crowding, and strengthened spacing and surface hierarchy across the sidebar, conversation, and composer.
+
 ## Current limitations
 
 - The semantic baseline has a small synthetic reference set and is not production-ready.
