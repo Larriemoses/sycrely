@@ -32,6 +32,7 @@ export const CONTEXT_RULES: ContextRule[] = [
   { id:"education",label:"Education record or student context",severity:"moderate",handling:"preserve",pattern:/\b(student|enrolled|stud(?:y|ies|ied)|school record|exam|revision plan|academic record|disciplinary (?:record|warning)|scholarship|plagiarism|GPA|carryovers?|research method)\b/i },
   { id:"family",label:"Family or relationship context",severity:"moderate",handling:"preserve",pattern:/\b(my child|our child|my parent|my spouse|my partner|their partner|former partner|my family|family member|family test|family matter|siblings?|twin daughters|fertility|IVF|pregnant|custody|co-parenting|domestic)\b/i },
   { id:"biometric",label:"Biometric or genetic context",severity:"critical",handling:"review",pattern:/\b(fingerprint|fingerprint-template|face scan|face embed|voiceprint|retina|iris scan|genetic data|genetic counselling|genetic marker|marker pattern|dna result)\b/i },
+  { id:"ambiguous-retaliation",label:"Ambiguous retaliation wording",severity:"high",handling:"review",pattern:/\b(pay\b.{0,60}\bback|get even|teach (?:him|her|them) a lesson|take revenge|retaliate)\b/i },
 ];
 
 // These rules capture affiliations that become identifying when combined with
@@ -44,4 +45,4 @@ export const RELATIONSHIP_RULES: RelationshipRule[] = [
   { id:"client-of",label:"Professional-service affiliation",token:"ORGANIZATION",prefixGroup:1,valueGroup:2,pattern:/\b(I am a client of|[Mm]y lawyer is|[Mm]y accountant is|is privately a client of|is a client of)\s+([A-Z][\w&'.-]+(?:\s+[A-Z][\w&'.-]+){0,8}(?:\s+\(fictional\))?)/g },
 ];
 
-export const CATALOG_VERSION = "2026.09.3";
+export const CATALOG_VERSION = "2026.09.4";
