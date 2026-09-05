@@ -28,6 +28,6 @@ export async function POST(request: Request) {
 
   await new Promise((resolve) => setTimeout(resolve, 450));
   return NextResponse.json({
-    message: `This is Sycrely's protected prototype response. I received a structured task capsule asking for: "${capsule.requestedOutput}". The protected task was: "${capsule.task}". Your original prompt and local placeholder map were not included.`,
+    message: `This is Sycrely's protected prototype response. I received a structured task capsule asking for: "${capsule.requestedOutput}". The complete protected prompt was: "${capsule.safeContext.protectedPrompt}". Your original prompt and local placeholder map were not included.`,
   });
 }

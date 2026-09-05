@@ -30,3 +30,10 @@ test("personal support capsules preserve the useful topic", () => {
 test("rejects an incomplete capsule", () => {
   assert.equal(isTaskCapsule({ version: "1.0", task: "Do something" }), false);
 });
+
+test("keeps the complete protected prompt even when the task summary is shortened", () => {
+  const prompt = `Explain this protected research request: ${"useful context ".repeat(30)}`.trim();
+  const capsule = buildTaskCapsule(analyzePrompt(prompt), "balanced");
+  assert.ok(capsule.task.length <= 180);
+  assert.equal(capsule.safeContext.protectedPrompt, prompt);
+});
