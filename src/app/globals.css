@@ -24,5 +24,11 @@
 [data-theme="dark"] .lock-page,[data-theme="dark"] .splash{background:radial-gradient(circle at 70% 12%,#12362b 0,transparent 32%),linear-gradient(145deg,#090c0b,#101713)}
 [data-theme="dark"] .lock-card{background:rgba(17,22,20,.94);box-shadow:0 30px 80px rgba(0,0,0,.5)}
 [data-theme="dark"] .lock-card input{background:#0e1311;border-color:#34453f;color:#edf5f2}
+.primary,.send-button,.shield,.message.assistant .avatar{color:#061713}
+.new-chat,.trace-link{color:var(--navy)}
+.mode-row button.active{background:var(--teal);color:#061713}
+.primary:hover,.send-button:hover{background:#24b989}
+.primary:focus-visible,.send-button:focus-visible,.new-chat:focus-visible,.theme-button:focus-visible,.end-button:focus-visible{outline:3px solid rgba(44,207,154,.35);outline-offset:2px}
+[data-theme="dark"] .new-chat,[data-theme="dark"] .trace-link{color:#c6d7d1}
 @media(max-width:760px){.app-shell{display:block}.sidebar{display:none}.chat-panel{height:100dvh}.topbar{height:72px;padding:12px 15px}.topbar .eyebrow{font-size:9px}.privacy-pill{font-size:0;padding:10px}.privacy-pill b{font-size:10px}.end-button{padding:8px}.empty-state{padding:28px 20px}.empty-state h2{font-size:29px}.promise-row span:last-child{display:none}.composer{padding:10px 12px 14px}.messages{padding:25px 14px}.bubble{font-size:13px}.mode-row span{font-size:9px}.choice-grid{grid-template-columns:1fr}.modal{padding:21px}.lock-card{padding:28px}.lock-card h1{font-size:29px}.capsule-block dl div{grid-template-columns:1fr;gap:3px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
