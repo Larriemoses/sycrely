@@ -45,7 +45,7 @@ function ReviewModal({ request, onCancel, onSend, sending }: { request: PendingR
     <div className="preview-block"><div className="preview-label"><span>Provider-bound version</span><span className="safe-chip">Protected</span></div><p>{analysis.protectedText}</p></div>
     <div className={`policy-block ${analysis.contentPolicy}`}><strong>Protection decision</strong><span>{analysis.policyExplanation}</span></div>
     <div className="capsule-block"><div className="preview-label"><span>Task capsule</span><span className="safe-chip">Built locally</span></div><dl><div><dt>Task</dt><dd>{capsule.task}</dd></div><div><dt>Requested answer</dt><dd>{capsule.requestedOutput}</dd></div><div><dt>Privacy rules</dt><dd>{capsule.constraints.length} attached</dd></div></dl></div>
-    <details><summary>What changed?</summary><ul>{analysis.changes.map(change=><li key={change}>{change}</li>)}</ul></details>
+    <details><summary>What changed?</summary><ul>{analysis.changes.map((change,index)=><li key={`${index}-${change}`}>{change}</li>)}</ul></details>
     <div className="modal-actions"><button className="secondary" onClick={onCancel} disabled={sending}>Go back and edit</button><button className="primary" onClick={onSend} disabled={sending}>{sending ? "Sending protected version..." : "Send protected version"}</button></div>
   </section></div>;
 }
