@@ -35,7 +35,11 @@ export async function POST(request: Request) {
     });
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Protected inference failed:", error instanceof Error ? error.message : "Unknown error");
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Protected inference failed:", message);
+    if (message.includes("temporarily rate-limited")) {
+      return NextResponse.json({ error: "The free AI provider is temporarily busy. Please wait a moment and try again." }, { status: 429 });
+    }
     return NextResponse.json({ error: "The protected AI request could not be completed." }, { status: 502 });
   }
 }

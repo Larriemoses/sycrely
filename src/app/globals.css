@@ -74,3 +74,29 @@ button:active:not(:disabled){transform:scale(.975)}
 [data-theme="dark"] .starter-grid button{background:rgba(21,27,25,.75)}[data-theme="dark"] .starter-grid button:hover{background:#18251f}[data-theme="dark"] .mode-switch{background:#18211e}[data-theme="dark"] .input-wrap{background:#151b19}
 @media(max-width:760px){.starter-grid{grid-template-columns:1fr;max-width:430px;margin-top:19px}.starter-grid button{padding:12px 13px}.empty-state{justify-content:flex-start;padding-top:9vh}.promise-row{margin-top:10px}.composer-tools span{font-size:0}.composer-tools span:after{content:"Enter to send";font-size:9px}}
 @media(prefers-reduced-motion:reduce){.message,.thinking i,.send-spinner{animation:none!important}.starter-grid button:hover,.input-wrap:focus-within,.send-button:not(:disabled):hover{transform:none}}
+
+/* Theme contrast audit: neutral dark surfaces, green reserved for meaning and action. */
+.secondary{background:#e8efee;color:#17364a;border:1px solid #d5e0df}
+.secondary:hover:not(:disabled){background:#dce8e6;color:#0f2d40}
+.secondary:disabled{color:#607377;background:#e8eeed;opacity:.72;cursor:not-allowed}
+[data-theme="dark"]{--navy:#f1f4f3;--teal:#16866b;--pale:#1a201e;--line:#2b302e;--ink:#edf1ef;--muted:#9da7a3;--paper:#090a0a}
+[data-theme="dark"] body,[data-theme="dark"] .app-shell{background:#090a0a}
+[data-theme="dark"] .sidebar{background:#0d0e0e;border-color:#252827}
+[data-theme="dark"] .chat-panel,[data-theme="dark"] .composer,[data-theme="dark"] .modal,[data-theme="dark"] .trace-panel{background:#111313}
+[data-theme="dark"] .topbar{background:rgba(17,19,19,.92)}
+[data-theme="dark"] .topbar,[data-theme="dark"] .composer{border-color:#282c2a}
+[data-theme="dark"] .new-chat,[data-theme="dark"] .end-button{background:#171919;border-color:#303533;color:#e3e8e6}
+[data-theme="dark"] .session-item,[data-theme="dark"] .mode-switch{background:#181b1a;color:#e8eeeb}
+[data-theme="dark"] .bubble,[data-theme="dark"] .assistant .bubble{background:#191c1b;border-color:#242927}
+[data-theme="dark"] .assistant .bubble{box-shadow:inset 3px 0 0 var(--teal)}
+[data-theme="dark"] .avatar{background:#1d211f}
+[data-theme="dark"] .preview-block,[data-theme="dark"] .policy-block,[data-theme="dark"] .capsule-block,[data-theme="dark"] .trace-capsule,[data-theme="dark"] .trace-copy{background:#171a19;border-color:#303633;color:#c1cac6}
+[data-theme="dark"] .input-wrap,[data-theme="dark"] .input-wrap textarea{background:#161818;border-color:#343a37;color:#f1f4f3}
+[data-theme="dark"] .starter-grid button,[data-theme="dark"] .starter-grid button:hover{background:#171919}
+[data-theme="dark"] .promise-row span{background:#191d1b;color:#bdc7c3}
+[data-theme="dark"] .lock-page,[data-theme="dark"] .splash{background:radial-gradient(circle at 70% 12%,rgba(22,134,107,.1),transparent 30%),#090a0a}
+[data-theme="dark"] .modal-actions{background:linear-gradient(transparent 0,#111313 25%)}
+[data-theme="dark"] .secondary{background:#e7ecea;color:#172723;border-color:#f2f5f4}
+[data-theme="dark"] .secondary:hover:not(:disabled){background:#fff;color:#0b1713}
+[data-theme="dark"] .secondary:disabled{background:#dbe1df;color:#52615c;opacity:.7}
+[data-theme="dark"] .primary,[data-theme="dark"] .send-button,[data-theme="dark"] .shield,[data-theme="dark"] .message.assistant .avatar,[data-theme="dark"] .mode-row button.active{background:#16866b;color:#fff}

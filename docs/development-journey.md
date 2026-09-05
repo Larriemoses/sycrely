@@ -56,6 +56,12 @@ The first controlled live test used OpenRouter's free-model router with a harmle
 
 The workspace now provides clickable protected-task starters, clear hover/pressed/focus/selected/disabled states, an auto-growing composer, keyboard guidance, a local-protection readiness signal, animated secure-thinking feedback, message entrance motion, and clearer delivery receipts. Motion is intentionally restrained and disabled when the device requests reduced motion. Mobile layouts reduce density without hiding the central privacy state.
 
+## Live-answer resilience and dark-theme contrast
+
+A live hostel-recommendation test exposed two weaknesses of free-model routing: one selected model incorrectly treated a hidden name as missing task context, while another could consume its output allowance in reasoning and return no visible answer. The provider instruction now defines the protected prompt as the complete working request, forbids internal-capsule commentary, and tells models to provide useful general guidance before asking for genuinely necessary preferences. Sycrely retries once when it detects a false missing-context refusal or an empty visible response, requests low reasoning effort, excludes hidden reasoning, and allows up to 1,200 answer tokens. HTTP 429 responses receive one short retry and then produce a clear free-capacity message.
+
+The color audit also moved Dark mode from green-tinted surfaces to neutral black and charcoal. Green is now reserved for privacy indicators and primary actions. Primary action text is white in both themes, while secondary buttons have explicit readable colors for Light, Dark, hover, and disabled states.
+
 ## Current limitations
 
 - The semantic baseline has a small synthetic reference set and is not production-ready.
