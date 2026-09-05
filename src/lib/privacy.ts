@@ -35,6 +35,13 @@ type Detector = {
 
 const detectors: Detector[] = [
   { category: "credential", label: "Credential or secret key", severity: "critical", regex: /\b(?:sk-[a-z0-9_-]{12,}|api[_ -]?key\s*[:=]\s*\S+|password\s*[:=]\s*\S+)\b/gi, token: "CREDENTIAL_REMOVED" },
+  { category: "government-id", label: "Nigerian National Identification Number (NIN)", severity: "critical", regex: /\b((?:my\s+)?NIN(?:\s+(?:is|number))?\s*[:#=-]?\s*)(\d{11})\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
+  { category: "nigeria-financial-id", label: "Nigerian Bank Verification Number (BVN)", severity: "critical", regex: /\b((?:my\s+)?BVN(?:\s+(?:is|number))?\s*[:#=-]?\s*)(\d{11})\b/gi, token: "FINANCIAL_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
+  { category: "nigeria-voter-id", label: "Nigerian Voter Identification Number (VIN)", severity: "critical", regex: /\b((?:my\s+)?(?:VIN|voter identification number|voter(?:'s)? number)(?:\s+is)?\s*[:#=-]?\s*)([A-Z0-9-]{10,25})\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
+  { category: "nigeria-business-id", label: "Nigerian business registration number", severity: "high", regex: /\b((?:CAC\s+)?(?:RC|BN|IT)(?:\s+(?:number|no\.?))?(?:\s+is)?\s*[:#=-]?\s*)(\d{4,10})\b/gi, token: "BUSINESS_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
+  { category: "nigeria-tax-id", label: "Nigerian tax identifier", severity: "critical", regex: /\b((?:my\s+)?(?:TIN|tax identification number|tax ID)(?:\s+is)?\s*[:#=-]?\s*)([A-Z0-9-]{8,20})\b/gi, token: "GOVERNMENT_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
+  { category: "nigeria-financial-id", label: "Nigerian bank account number", severity: "critical", regex: /\b((?:my\s+)?(?:bank\s+)?(?:account|acct)(?:\s+(?:number|no\.?))?(?:\s+is)?\s*[:#=-]?\s*)(\d{10})\b/gi, token: "FINANCIAL_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
+  { category: "education-id", label: "Student or matriculation number", severity: "high", regex: /\b((?:my\s+)?(?:matric(?:ulation)?|student)(?:\s+(?:number|no\.?|ID))?(?:\s+is)?\s*[:#=-]?\s*)([A-Z0-9][A-Z0-9/-]{4,24})\b/gi, token: "EDUCATION_IDENTIFIER_REMOVED", captureGroup: 2, keepPrefix: 1 },
   { category: "email", label: "Email address", severity: "high", regex: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, token: "EMAIL", restorable: true },
   { category: "network", label: "IP address", severity: "high", regex: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g, token: "IP_ADDRESS", restorable: true },
   { category: "network", label: "Private hostname or endpoint", severity: "critical", regex: /\b(?:https?:\/\/)?[a-z0-9.-]+\.(?:internal|local|test)(?:\/[\w./-]*)?/gi, token: "PRIVATE_ENDPOINT_REMOVED" },
