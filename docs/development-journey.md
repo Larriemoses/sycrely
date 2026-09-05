@@ -88,8 +88,12 @@ A separate 48-case semantic benchmark was added with 32 sensitive paraphrases an
 
 ## Next milestones
 
-1. Expand the calibration benchmark with Nigerian language styles and harder benign controls.
-2. Evaluate a browser-sized ONNX or Transformers.js model through the classifier adapter.
-3. Compare semantic recall, false-positive rate, latency, download size, and memory use on mobile devices.
+1. Evaluate a browser-sized ONNX or Transformers.js model through the classifier adapter.
+2. Compare semantic recall, false-positive rate, latency, download size, and memory use on mobile devices.
+3. Fine-tune the best licence-compatible candidate on synthetic, consented, and properly separated training data.
 4. Add authentication, quotas, managed credits, model policy, rate limiting, and abuse controls around Live mode.
 6. Add grounded response verification and uncertainty indicators.
+
+## Classifier foundation expansion
+
+The local-model phase now has a stable 19-label span vocabulary and automated policy invariants. The semantic challenge set doubled from 48 to 96 cases with Nigerian English, Pidgin, Yoruba-, Hausa-, and Igbo-mixed phrasing plus harder harmless controls. The current character n-gram baseline achieves only 57.81% category recall and 78.72% measured precision on this wider set. This honest failure establishes why an on-device language model is necessary and gives candidate models a fixed gate: at least 90% recall and precision, offline execution, and no raw prompt telemetry.
