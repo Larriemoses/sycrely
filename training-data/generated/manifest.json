@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "reproducible-no-timestamp",
+  "total": 500,
+  "counts": {
+    "train": 355,
+    "validation": 48,
+    "test": 97
+  },
+  "spans": 536,
+  "reviewStatus": "Every annotation requires human review before model training.",
+  "leakageControl": "Paraphrases sharing a template or organization stay in one split."
+}
