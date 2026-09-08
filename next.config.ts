@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const isDevelopment = process.env.NODE_ENV === "development";
 const sharedDirectives = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${isDevelopment ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' blob: 'unsafe-inline' 'wasm-unsafe-eval'${isDevelopment ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/", headers: [...securityHeaders, { key: "Content-Security-Policy", value: `${sharedDirectives}; connect-src 'self'` }] },
-      { source: "/model-lab", headers: [...securityHeaders, { key: "Content-Security-Policy", value: `${sharedDirectives}; connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co https://*.xethub.hf.co https://*.amazonaws.com` }] },
+      { source: "/model-lab", headers: [...securityHeaders, { key: "Content-Security-Policy", value: `${sharedDirectives}; connect-src 'self'` }] },
     ];
   },
 };

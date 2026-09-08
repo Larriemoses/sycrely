@@ -20,6 +20,9 @@
 # production
 /build
 
+# Provisioned local classifier assets (large, reproducibly fetched and verified)
+/public/models/
+
 # misc
 .DS_Store
 *.pem
