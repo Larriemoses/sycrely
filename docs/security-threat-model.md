@@ -16,9 +16,9 @@ This threat model covers the local privacy classifier, its model supply chain, b
 
 ## Model supply chain
 
-The experimental model manifest pins repository revision `c2a4dbf593c57f47004c5bc2d3770d311aee9c43` and the 135,359,829-byte quantized ONNX artifact SHA-256 `24a0b98f4dd4cd92842f5a541272f86f760225a64a29928eddef14bdb2edb986`. The lab currently resolves that immutable revision from Hugging Face; this is an explicitly temporary exception.
+The experimental model manifest pins repository revision `c2a4dbf593c57f47004c5bc2d3770d311aee9c43` and records the size and SHA-256 of all six required files. The provisioning script downloads that exact revision, writes to temporary files, verifies every artifact, and only then activates them under `public/models`. The browser loads the resulting copy from Sycrely's own origin with remote model resolution disabled.
 
-Production must copy the reviewed artifact to Sycrely-controlled hosting, verify its digest before activation, disable remote model resolution, and maintain a signed release manifest. ONNX avoids Python pickle deserialization but is still complex untrusted input for the runtime.
+The model bytes are intentionally ignored by Git: GitHub stores the manifest and reproducible provisioning script, not a 135 MB binary. Production should publish the same reviewed artifacts to Sycrely-controlled object storage/CDN, keep immutable filenames, verify digests during deployment, and maintain a signed release manifest. ONNX avoids Python pickle deserialization but is still complex untrusted input for the runtime.
 
 A poisoned classifier can manipulate labels or construct unusual outputs. It cannot transmit data by weights alone: exfiltration also requires an outbound channel such as telemetry, logging, an API fallback or a permissive network request. Sycrely therefore controls both provenance and network egress.
 
@@ -28,16 +28,15 @@ Production inference must run in a dedicated Web Worker. Worker isolation is def
 
 ## Application leakage
 
-The main application CSP restricts browser connections to its own origin. The laboratory receives a separate temporary CSP allowance for pinned model downloads. Camera, microphone and geolocation are disabled; framing is denied; referrer information is suppressed. An automated source test rejects common analytics and error-tracking clients in the private conversation UI and asserts its only browser fetch target is the same-origin inference route.
+The main application and laboratory CSPs restrict browser connections to their own origin. The script policy permits browser-created `blob:` modules because ONNX Runtime Web requires one for its WebAssembly backend; it does not grant a network origin. Camera, microphone and geolocation are disabled; framing is denied; referrer information is suppressed. Automated source tests reject remote model resolution, common analytics and error-tracking clients in the private conversation UI, and assert its only browser fetch target is the same-origin inference route.
 
 This static check complements—not replaces—a browser network audit. Production release testing must record all requests during vault unlock, prompt analysis, model inference, provider delivery, response restoration, error handling and session deletion.
 
 ## Remaining work
 
 - Move model execution from the lab page into a dedicated Worker.
-- Self-host and verify the model bytes before parsing.
+- Add browser-side digest verification before first parse as an additional production safeguard.
 - Add a CI dependency audit and software bill of materials.
 - Add automated browser network-boundary tests.
 - Define incident response, key rotation and model rollback procedures.
 - Perform an independent penetration test before handling production secrets.
-

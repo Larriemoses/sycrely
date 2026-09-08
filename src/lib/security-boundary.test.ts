@@ -3,11 +3,24 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { EXPERIMENTAL_MODEL_MANIFEST, PRODUCTION_MODEL_POLICY } from "./model-integrity.ts";
 
-test("experimental model is pinned to an immutable revision and SHA-256", () => {
+test("experimental model is pinned and every local file has a SHA-256", () => {
   assert.match(EXPERIMENTAL_MODEL_MANIFEST.revision, /^[a-f0-9]{40}$/);
-  assert.match(EXPERIMENTAL_MODEL_MANIFEST.sha256, /^[a-f0-9]{64}$/);
+  assert.equal(EXPERIMENTAL_MODEL_MANIFEST.localBasePath, "/models/");
+  assert.equal(EXPERIMENTAL_MODEL_MANIFEST.files.length, 6);
+  for (const file of EXPERIMENTAL_MODEL_MANIFEST.files) {
+    assert.match(file.sha256, /^[a-f0-9]{64}$/);
+    assert.ok(file.bytes > 0);
+  }
   assert.ok(EXPERIMENTAL_MODEL_MANIFEST.bytes > 100_000_000);
   assert.match(EXPERIMENTAL_MODEL_MANIFEST.purpose, /synthetic/i);
+});
+
+test("model lab permits local assets and forbids remote model resolution", async () => {
+  const source = await readFile(new URL("../app/model-lab/page.tsx", import.meta.url), "utf8");
+  assert.match(source, /env\.allowLocalModels=true/);
+  assert.match(source, /env\.allowRemoteModels=false/);
+  assert.match(source, /env\.localModelPath=EXPERIMENTAL_MODEL_MANIFEST\.localBasePath/);
+  assert.doesNotMatch(source, /https?:\/\/|huggingface\.co/);
 });
 
 test("production model policy fails closed", () => {

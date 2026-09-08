@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test src/lib/*.test.ts"
+    "test": "node --experimental-strip-types --test src/lib/*.test.ts",
+    "model:fetch": "node scripts/fetch-local-model.mjs",
+    "model:verify": "node scripts/fetch-local-model.mjs --verify-only"
   },
   "dependencies": {
     "@huggingface/transformers": "4.2.0",
