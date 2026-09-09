@@ -10,7 +10,8 @@
     "test": "node --experimental-strip-types --test src/lib/*.test.ts",
     "model:fetch": "node scripts/fetch-local-model.mjs",
     "model:verify": "node scripts/fetch-local-model.mjs --verify-only",
-    "dataset:build": "node --experimental-strip-types scripts/build-training-corpus.ts"
+    "dataset:build": "node --experimental-strip-types scripts/build-training-corpus.ts",
+    "dataset:approve": "node --experimental-strip-types scripts/approve-reviewed-corpus.ts"
   },
   "dependencies": {
     "@huggingface/transformers": "4.2.0",
