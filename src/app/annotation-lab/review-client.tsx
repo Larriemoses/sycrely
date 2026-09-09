@@ -3,13 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { PRIVACY_LABELS, type PrivacyLabelId } from "@/lib/privacy-labels";
 import type { TrainingRecord, TrainingSpan } from "@/lib/training-corpus";
-
-type Decision = "unreviewed" | "approved" | "needs-changes" | "rejected";
-type RecordReview = { spans: TrainingSpan[]; decision: Decision; note: string; reviewer: string; updatedAt: string };
-type ReviewStore = { schemaVersion: "1.0.0"; reviews: Record<string,RecordReview>; audit: AuditEntry[] };
-type AuditEntry = { at: string; recordId: string; reviewer: string; action: string; detail: string };
-const STORAGE_KEY = "sycrely.annotation-reviews.v1";
-const EMPTY_STORE: ReviewStore = { schemaVersion:"1.0.0",reviews:{},audit:[] };
+import { datasetFingerprint, EMPTY_REVIEW_STORE, REVIEW_STORAGE_KEY, type RecordReview, type ReviewDecision as Decision, type ReviewStore } from "@/lib/annotation-review";
 
 function highlightedText(text:string,spans:TrainingSpan[]){
   const output:React.ReactNode[]=[];let cursor=0;
@@ -23,11 +17,11 @@ function highlightedText(text:string,spans:TrainingSpan[]){
 }
 
 export default function ReviewClient({records}:{records:TrainingRecord[]}){
-  const [store,setStore]=useState<ReviewStore>(EMPTY_STORE);const [ready,setReady]=useState(false);const [index,setIndex]=useState(0);
+  const [store,setStore]=useState<ReviewStore>(EMPTY_REVIEW_STORE);const [ready,setReady]=useState(false);const [index,setIndex]=useState(0);
   const [filter,setFilter]=useState<Decision|"all">("all");const [query,setQuery]=useState("");const [reviewer,setReviewer]=useState("");
   const [selection,setSelection]=useState({start:0,end:0});const [newLabel,setNewLabel]=useState<PrivacyLabelId>("PERSON");
-  useEffect(()=>{const timer=window.setTimeout(()=>{try{const saved=localStorage.getItem(STORAGE_KEY);if(saved)setStore(JSON.parse(saved) as ReviewStore);}catch{}setReady(true)},0);return()=>window.clearTimeout(timer)},[]);
-  useEffect(()=>{if(ready)localStorage.setItem(STORAGE_KEY,JSON.stringify(store))},[ready,store]);
+  useEffect(()=>{const timer=window.setTimeout(()=>{try{const saved=localStorage.getItem(REVIEW_STORAGE_KEY);if(saved)setStore(JSON.parse(saved) as ReviewStore);}catch{}setReady(true)},0);return()=>window.clearTimeout(timer)},[]);
+  useEffect(()=>{if(ready)localStorage.setItem(REVIEW_STORAGE_KEY,JSON.stringify(store))},[ready,store]);
   const visible=useMemo(()=>records.filter(record=>{const decision=store.reviews[record.id]?.decision??"unreviewed";return(filter==="all"||decision===filter)&&(!query||record.text.toLocaleLowerCase().includes(query.toLocaleLowerCase())||record.id.includes(query));}),[records,store,filter,query]);
   const safeIndex=Math.min(index,Math.max(0,visible.length-1));
   const record=visible[safeIndex];
@@ -45,7 +39,7 @@ export default function ReviewClient({records}:{records:TrainingRecord[]}){
   function removeSpan(target:TrainingSpan){update("remove-span",`${target.label}:${target.start}-${target.end}`,current=>({...current,spans:current.spans.filter(span=>!(span.start===target.start&&span.end===target.end))}))}
   function relabelSpan(target:TrainingSpan,label:PrivacyLabelId){update("relabel-span",`${target.label}->${label}:${target.start}-${target.end}`,current=>({...current,spans:current.spans.map(span=>span.start===target.start&&span.end===target.end?{...span,label}:span)}))}
   function setNote(note:string){update("note","review note updated",current=>({...current,note}))}
-  function exportReviews(){const payload={exportedAt:new Date().toISOString(),datasetRecords:records.length,...store};const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}));const anchor=document.createElement("a");anchor.href=url;anchor.download="sycrely-annotation-review.json";anchor.click();URL.revokeObjectURL(url)}
+  function exportReviews(){const payload={exportedAt:new Date().toISOString(),datasetRecords:records.length,datasetFingerprint:datasetFingerprint(records),...store};const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}));const anchor=document.createElement("a");anchor.href=url;anchor.download="sycrely-annotation-review.json";anchor.click();URL.revokeObjectURL(url)}
   if(!ready)return <section className="annotation-loading">Opening local review workspace…</section>;
   return <div className="annotation-shell">
     <aside className="annotation-sidebar">

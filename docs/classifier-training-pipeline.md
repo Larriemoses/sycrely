@@ -49,6 +49,8 @@ The development-only `/annotation-lab` workspace exposes the 403 training and 60
 
 Review state and its append-only action history remain in browser storage. The reviewer can export a JSON audit file for controlled merging into a future approved corpus. The application does not send annotation activity to Sycrely, analytics, or an external model. Production collaboration will require authenticated reviewers, encrypted project storage, access controls, and a reviewed import process; local browser storage is intentionally only the prototype boundary.
 
+The repository now includes that controlled import boundary. Each export carries a deterministic fingerprint of all reviewable IDs, prompts, and splits. `pnpm dataset:approve <review-file>` fails closed if the export belongs to another corpus, contains unknown records or labels, omits a record, lacks reviewer identity, retains a non-approved decision, or contains invalid or overlapping offsets. Only a completely approved 403-record training split and 60-record validation split can be written to `training-data/approved/`; the test split remains excluded.
+
 ## Release gates
 
 - At least 90% span recall and 90% precision overall.

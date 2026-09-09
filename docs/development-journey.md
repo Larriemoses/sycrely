@@ -131,3 +131,7 @@ The `/annotation-lab` prototype now provides a local human-review workflow for t
 ## Full privacy-label vocabulary expansion
 
 The reproducible corpus now contains 572 prompts and 590 exact draft spans: 403 training, 60 validation, and 109 locked test records. Seventy-two new examples close the first vocabulary gap. Fifty-four contain sensitive spans across financial accounts, payment cards, education identifiers, health details, biometric or genetic data, legal cases, employment details, identifying relationships, and identifying locations; eighteen are harmless controls that should remain untouched. Every new sensitive category has four training, one validation, and one test example, using standard English plus Nigerian Pidgin and Yoruba-, Hausa-, or Igbo-mixed phrasing. Automated tests now fail if any of the nineteen labels disappears. These remain synthetic draft annotations pending human review, not production training truth.
+
+## Human-review approval gate
+
+Annotation exports are now tied to the exact reviewable corpus with a deterministic fingerprint. A new local approval command validates every one of the 463 training and validation decisions, reviewer identities, labels, offsets, text matches, and overlap rules before producing approved JSONL. Missing, stale, rejected, needs-changes, or malformed reviews fail closed. The 109-record test split is structurally excluded, preventing a reviewer from tuning the training set against locked answers. No approved dataset has been generated yet because genuine human review is still required.

@@ -11,7 +11,7 @@ export type TrainingRecord = {
   sourceGroup: string;
   split: TrainingSplit;
   spans: TrainingSpan[];
-  reviewStatus: "machine-derived-needs-human-review";
+  reviewStatus: "machine-derived-needs-human-review" | "human-reviewed-approved";
 };
 
 export function splitForGroup(group: string): TrainingSplit {
