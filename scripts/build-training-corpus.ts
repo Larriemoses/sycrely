@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ORGANIZATION_BENCHMARK } from "../src/lib/organization-benchmark.ts";
+import { PRIVACY_LABEL_CONTROLS, PRIVACY_LABEL_EXPANSION } from "../src/lib/privacy-label-expansion.ts";
 import { makeSpans, splitForGroup, validateTrainingRecord, type TrainingRecord, type TrainingSplit } from "../src/lib/training-corpus.ts";
 
 type NigerianRow = {
@@ -43,6 +44,8 @@ records.push(...ORGANIZATION_BENCHMARK.map(row => {
   };
 }));
 
+records.push(...PRIVACY_LABEL_EXPANSION, ...PRIVACY_LABEL_CONTROLS);
+
 const ids = new Set<string>();
 const prompts = new Set<string>();
 for (const record of records) {
@@ -68,6 +71,7 @@ const summary = {
   total: records.length,
   counts,
   spans: records.reduce((sum, row) => sum + row.spans.length, 0),
+  labelCounts: Object.fromEntries([...new Set(records.flatMap(row=>row.spans.map(span=>span.label)))].sort().map(label=>[label,records.flatMap(row=>row.spans).filter(span=>span.label===label).length])),
   reviewStatus: "Every annotation requires human review before model training.",
   leakageControl: "Paraphrases sharing a template or organization stay in one split.",
 };

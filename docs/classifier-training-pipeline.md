@@ -23,11 +23,11 @@ Run `pnpm dataset:build` to reproduce the files in `training-data/generated/`.
 
 | Split | Records | Permitted use |
 | --- | ---: | --- |
-| Train | 355 | Weight updates |
-| Validation | 48 | Thresholds, calibration, and model choice |
-| Test | 97 | Final measurement only |
+| Train | 403 | Weight updates |
+| Validation | 60 | Thresholds, calibration, and model choice |
+| Test | 109 | Final measurement only |
 
-The 500 records contain 536 draft spans. Some harmless prompts intentionally contain zero spans. The present corpus covers ten of the nineteen privacy labels; the remaining labels need dedicated synthetic and consented examples before training.
+The 572 records contain 590 draft spans. Some harmless prompts intentionally contain zero spans. All nineteen privacy labels now have at least one dedicated synthetic example. The nine formerly missing categories each have four training examples, one validation example, and one locked test example, plus eighteen new harmless controls. Coverage does not mean readiness: every example still requires human review, and six examples per new category are only a foundation for broader multilingual collection.
 
 ## Human review contract
 
@@ -45,7 +45,7 @@ Reviewers must never see the locked test labels while improving training example
 
 ## Local annotation workspace
 
-The development-only `/annotation-lab` workspace exposes the 355 training and 48 validation records but never loads the 97 locked test records. A reviewer can search and filter prompts, inspect highlighted spans, select a missed phrase, add one of the nineteen stable privacy labels, relabel or remove a draft span, leave a note, and approve, reject, or request changes.
+The development-only `/annotation-lab` workspace exposes the 403 training and 60 validation records but never loads the 109 locked test records. A reviewer can search and filter prompts, inspect highlighted spans, select a missed phrase, add one of the nineteen stable privacy labels, relabel or remove a draft span, leave a note, and approve, reject, or request changes.
 
 Review state and its append-only action history remain in browser storage. The reviewer can export a JSON audit file for controlled merging into a future approved corpus. The application does not send annotation activity to Sycrely, analytics, or an external model. Production collaboration will require authenticated reviewers, encrypted project storage, access controls, and a reviewed import process; local browser storage is intentionally only the prototype boundary.
 

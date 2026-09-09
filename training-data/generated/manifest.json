@@ -1,13 +1,34 @@
 {
   "schemaVersion": "1.0.0",
   "generatedAt": "reproducible-no-timestamp",
-  "total": 500,
+  "total": 572,
   "counts": {
-    "train": 355,
-    "validation": 48,
-    "test": 97
+    "train": 403,
+    "validation": 60,
+    "test": 109
   },
-  "spans": 536,
+  "spans": 590,
+  "labelCounts": {
+    "ADDRESS": 18,
+    "BIOMETRIC_GENETIC": 6,
+    "CONFIDENTIAL_ASSET": 12,
+    "CREDENTIAL": 30,
+    "EDUCATION_ID": 6,
+    "EMAIL": 3,
+    "EMPLOYMENT_DETAIL": 6,
+    "FINANCIAL_ACCOUNT": 6,
+    "FINANCIAL_AMOUNT": 18,
+    "GOVERNMENT_ID": 12,
+    "HEALTH_DETAIL": 6,
+    "LEGAL_CASE": 6,
+    "LOCATION": 6,
+    "NETWORK_ID": 12,
+    "ORGANIZATION": 200,
+    "PAYMENT_CARD": 6,
+    "PERSON": 215,
+    "PHONE": 16,
+    "RELATIONSHIP": 6
+  },
   "reviewStatus": "Every annotation requires human review before model training.",
   "leakageControl": "Paraphrases sharing a template or organization stay in one split."
 }
