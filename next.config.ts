@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/", headers: [...securityHeaders, { key: "Content-Security-Policy", value: `${sharedDirectives}; connect-src 'self'` }] },
       { source: "/model-lab", headers: [...securityHeaders, { key: "Content-Security-Policy", value: `${sharedDirectives}; connect-src 'self'` }] },
+      { source: "/annotation-lab", headers: [...securityHeaders, { key: "Content-Security-Policy", value: `${sharedDirectives}; connect-src 'self'` }] },
     ];
   },
 };

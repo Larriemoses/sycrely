@@ -37,3 +37,10 @@ test("related paraphrases cannot leak across dataset splits", async () => {
     }
   }
 });
+
+test("annotation workspace never loads the locked test split", async () => {
+  const page = await readFile(new URL("../app/annotation-lab/page.tsx", import.meta.url), "utf8");
+  assert.match(page, /"train\.jsonl", "validation\.jsonl"/);
+  assert.doesNotMatch(page, /"test\.jsonl"/);
+  assert.match(page, /locked test split is deliberately unavailable/i);
+});

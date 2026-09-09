@@ -43,6 +43,12 @@ For every prompt, a reviewer must check:
 
 Reviewers must never see the locked test labels while improving training examples. Corrections require reviewer identity, timestamp, reason, previous value, and new value in an append-only audit record.
 
+## Local annotation workspace
+
+The development-only `/annotation-lab` workspace exposes the 355 training and 48 validation records but never loads the 97 locked test records. A reviewer can search and filter prompts, inspect highlighted spans, select a missed phrase, add one of the nineteen stable privacy labels, relabel or remove a draft span, leave a note, and approve, reject, or request changes.
+
+Review state and its append-only action history remain in browser storage. The reviewer can export a JSON audit file for controlled merging into a future approved corpus. The application does not send annotation activity to Sycrely, analytics, or an external model. Production collaboration will require authenticated reviewers, encrypted project storage, access controls, and a reviewed import process; local browser storage is intentionally only the prototype boundary.
+
 ## Release gates
 
 - At least 90% span recall and 90% precision overall.
