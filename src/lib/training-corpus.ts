@@ -7,7 +7,7 @@ export type TrainingRecord = {
   id: string;
   text: string;
   languageStyle: string;
-  source: "nigerian-privacy-dataset" | "organization-benchmark";
+  source: "nigerian-privacy-dataset" | "organization-benchmark" | "privacy-label-expansion";
   sourceGroup: string;
   split: TrainingSplit;
   spans: TrainingSpan[];
@@ -17,6 +17,14 @@ export type TrainingRecord = {
 export function splitForGroup(group: string): TrainingSplit {
   const bucket = createHash("sha256").update(group).digest().readUInt32BE(0) % 100;
   return bucket < 70 ? "train" : bucket < 85 ? "validation" : "test";
+}
+
+export function groupForSplit(prefix: string, split: TrainingSplit): string {
+  for (let nonce=0; nonce<10_000; nonce++) {
+    const group = `${prefix}:${nonce}`;
+    if (splitForGroup(group) === split) return group;
+  }
+  throw new Error(`Unable to assign ${prefix} to ${split}`);
 }
 
 export function inferDraftLabel(text: string, value: string, categories: string[]): PrivacyLabelId {
