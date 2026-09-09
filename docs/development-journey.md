@@ -123,3 +123,7 @@ The first end-to-end browser run loaded the same-origin model in approximately 2
 ## Classifier annotation pipeline
 
 Sycrely now builds a versioned span-annotation draft from 300 Nigerian privacy examples and 200 fictional organization examples. The first reproducible build contains 500 prompts and 536 exact spans, split into 355 training, 48 validation and 97 locked test records. Group-based hashing keeps rewrites of one Nigerian template and every reuse of one fictional organization in a single split, preventing easy paraphrase leakage. Automated checks validate offsets, text equality, allowed labels, uniqueness, and split isolation. All generated labels remain explicitly marked for human review; they are not yet approved training truth.
+
+## Local annotation review workspace
+
+The `/annotation-lab` prototype now provides a local human-review workflow for training and validation annotations. Reviewers must identify themselves before changing data, can add, remove, and relabel exact spans, record notes and decisions, filter progress, and export an auditable JSON review file. Every action records its record ID, reviewer, timestamp, action, and detail in browser storage. The locked test split is excluded in both code and a permanent regression test. Browser verification confirmed approval counters, export readiness, persistence across reload, and a clean console. This prototype does not yet merge reviews back into training truth or support multi-reviewer adjudication.
