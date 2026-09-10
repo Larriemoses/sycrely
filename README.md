@@ -1,5 +1,7 @@
 # Sycrely
 
+Development deployment: [sycrely.vercel.app](https://sycrely.vercel.app)
+
 **Powerful AI. Private by design.**
 
 Sycrely is a privacy-first AI gateway that helps people use frontier AI models without sending unnecessary personal, confidential, or identifying context to the model provider.
