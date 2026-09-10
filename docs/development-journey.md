@@ -135,3 +135,7 @@ The reproducible corpus now contains 572 prompts and 590 exact draft spans: 403 
 ## Human-review approval gate
 
 Annotation exports are now tied to the exact reviewable corpus with a deterministic fingerprint. A new local approval command validates every one of the 463 training and validation decisions, reviewer identities, labels, offsets, text matches, and overlap rules before producing approved JSONL. Missing, stale, rejected, needs-changes, or malformed reviews fail closed. The 109-record test split is structurally excluded, preventing a reviewer from tuning the training set against locked answers. No approved dataset has been generated yet because genuine human review is still required.
+
+## Public development deployment
+
+The complete prototype is connected to the `Larriemoses/sycrely` GitHub repository and deployed on Vercel at `https://sycrely.vercel.app`. Both the main private-conversation interface and `/annotation-lab` are available for cross-device development testing. The first Vercel build exposed a truncated generated training JSONL file from an earlier repository transfer; the intact local corpus was hash-checked, uploaded again, and the subsequent production build succeeded. Annotation review still persists in the reviewer's browser at this checkpoint, so the single trusted reviewer must export the completed review JSON for controlled approval. Shared server persistence and access-code protection remain a later enhancement if multiple reviewers or cross-device continuation become necessary.
