@@ -17,6 +17,35 @@ test("generalizes a confidential business idea, not only its owner", () => {
   assert.match(result.protectedText, /Help me assess the launch strategy/i);
 });
 
+test("protects a detailed owned business idea even when the user does not say confidential", () => {
+  const prompt = "I have this business idea I have been thinking about. I want to build an app where small business owners connect WhatsApp, Instagram, email and their website. The AI remembers customer requests, follows up automatically, creates invoices, sends payment reminders and predicts which customers will buy.";
+  const result = analyzePrompt(prompt);
+  assert.equal(result.risk, "high");
+  assert.equal(result.contentPolicy, "confidential-asset");
+  assert.match(result.protectedText, /\[CONFIDENTIAL_ASSET_1\]/);
+  assert.doesNotMatch(result.protectedText, /WhatsApp|Instagram|creates invoices|predicts which customers/i);
+  assert.match(result.protectedText, /evaluate, validate, and plan/i);
+});
+
+test("understands natural secrecy language around a business concept", () => {
+  const result = analyzePrompt("I am building a platform for a new vendor-scoring workflow, but I don't want the idea exposed to the public yet. Help me research the market.");
+  assert.equal(result.contentPolicy, "confidential-asset");
+  assert.doesNotMatch(result.protectedText, /vendor-scoring workflow/i);
+  assert.match(result.protectedText, /Help me research the market/i);
+});
+
+test("does not mistake generic identifier-protection instructions for a secret project", () => {
+  const result = analyzePrompt("I am enrolled at Riverglass Polytechnic, and my project is on low-cost soil-moisture sensors. Please protect confidential identifiers while preserving decision-relevant context.");
+  assert.notEqual(result.contentPolicy, "confidential-asset");
+  assert.match(result.protectedText, /soil-moisture sensors/i);
+});
+
+test("keeps sentence boundaries out of an organization alias", () => {
+  const result = analyzePrompt("She works at Example Foods. The form needs a short summary.");
+  assert.match(result.protectedText, /\[ORGANIZATION_1\]\. The form/);
+  assert.equal(result.aliases.some((alias) => alias.value === "Example Foods"), true);
+});
+
 test("protects identity but preserves necessary therapy context", () => {
   const result = analyzePrompt("I'm Olarewaju and I need therapy. I need advice on what I'm facing as a student.");
   assert.equal(result.risk, "high");

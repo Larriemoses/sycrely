@@ -80,10 +80,12 @@ const detectors: Detector[] = [
 ];
 
 const personalSupport = /\b(therapy|therapist|counsell?ing|emotional support|mental health|anxiety|depression|grief|trauma|what i(?:'m| am) facing)\b/i;
-const confidentialSignal = /\b(confidential|secret|hidden|unpublished|unreleased|proprietary|not announced|not launched|do not share|not exposed|protect(?:ed)? idea|private (?:idea|strategy|research)|before any public announcement)\b/i;
+const confidentialSignal = /\b(confidential|secret|hidden|unpublished|unreleased|proprietary|not announced|not launched|do not share|keep (?:it|this|the idea) private|not (?:yet )?(?:public|exposed)|don['’]?t want (?:it|this|the idea).{0,35}(?:public|exposed|shared|recorded)|protect(?:ed)? (?:my |our |the )?idea|private (?:idea|strategy|research)|before any public announcement|haven['’]?t told (?:anyone|people)|under wraps)\b/i;
 const businessAsset = /\b(product idea|business idea|invention|algorithm|formula|prototype|mechanism|technical design|business model|research idea|technology|unique feature|designed? a|method|project|pricing|launch plan|ranking score|board note|acquire|acquisition)\b/i;
 const businessContext = /\b(company|startup|business|product|customer|market|launch|revenue|commercial|founder|employer|institute|research house|logistics|foods|co-op|repository|board)\b/i;
 const requestStart = /\b(help me|please|create|develop|suggest|explain|evaluate|assess|plan|compare|list|give me)\b/i;
+const ownedBusinessAsset = /\b(?:i have|i['’]?ve got|i am building|i['’]?m building|we are building|we['’]?re building|my|our)\b.{0,80}\b(?:business idea|product idea|startup|prototype|invention|platform|app)\b/i;
+const genericBusinessTask = /\b(?:privacy-safe product feedback|how to document an invention safely|model-evaluation advice|feedback on experimental design|market-testing methodology|soil-moisture sensor research|privacy-preserving biometric design|general integration-risk checklist)\b/gi;
 
 const combinationSignals: Array<{ label: string; weight: number; pattern: RegExp }> = [
   { label: "Exact age", weight: 1, pattern: /\b(?:I am|I'm|aged?|age is)\s+(?:an?\s+)?\d{1,3}(?:[ -]years?[ -]old)?\b/i },
@@ -145,8 +147,12 @@ function applyRelationshipRules(text: string, aliases: AliasEntry[], findings: F
       found = true;
       counters[rule.token] = (counters[rule.token] ?? 0) + 1;
       const token = `[${rule.token}_${counters[rule.token]}]`;
-      aliases.push({ token, value: String(parts[rule.valueGroup]), category: rule.id });
-      return `${String(parts[rule.prefixGroup])} ${token}`;
+      const captured = String(parts[rule.valueGroup]);
+      const boundary = captured.match(/^(.+?)([.!?]\s+(?:The|This|That|It|He|She|They|We|I))$/);
+      const value = boundary?.[1] ?? captured;
+      const suffix = boundary?.[2] ?? "";
+      aliases.push({ token, value, category: rule.id });
+      return `${String(parts[rule.prefixGroup])} ${token}${suffix}`;
     });
     if (found) {
       findings.push({ category: rule.id, label: rule.label, severity: "high" });
@@ -178,22 +184,38 @@ function applyContextualProperNames(text: string, input: string, aliases: AliasE
 }
 
 function abstractConfidentialBusinessAsset(input: string, aliases: AliasEntry[]) {
-  if (!confidentialSignal.test(input) || !businessAsset.test(input) || !businessContext.test(input)) {
+  // A request to "protect confidential identifiers" describes Sycrely's operation,
+  // not necessarily the user's underlying idea. Remove that boilerplate before
+  // deciding whether the business/research asset itself is confidential.
+  const assetContext = input.replace(/protect confidential identifiers/gi, "");
+  const explicitlyPrivateAsset = confidentialSignal.test(assetContext) && (businessAsset.test(input) || ownedBusinessAsset.test(input));
+  const ownedIdea = ownedBusinessAsset.test(input) && businessContext.test(input);
+  if (!explicitlyPrivateAsset && !ownedIdea) {
     return { text: input, changed: false };
   }
 
   const sentences = input.split(/(?<=[.!?])\s+/);
-  let changed = false;
-  const text = sentences.map((sentence) => {
-    if (changed || !businessAsset.test(sentence)) return sentence;
-    changed = true;
+  const safeRequests = sentences.flatMap((sentence) => {
     const request = sentence.match(requestStart);
-    const privatePart = request?.index && request.index > 0 ? sentence.slice(0, request.index).trim() : sentence.trim();
-    const publicRequest = request?.index && request.index > 0 ? ` ${sentence.slice(request.index).trim()}` : "";
-    aliases.push({ token: "[CONFIDENTIAL_ASSET_1]", value: privatePart, category: "confidential-asset" });
-    return `A private organization is developing [CONFIDENTIAL_ASSET_1], whose distinguishing details remain local.${publicRequest}`;
-  }).join(" ");
-  return { text, changed };
+    if (request?.index === undefined) return [];
+    const requestText = sentence.slice(request.index).trim();
+    if (request.index === 0 && requestText.includes(":")) {
+      const instruction = requestText.slice(0, requestText.indexOf(":"));
+      return [`${instruction.replace(/(?:this|my|our)?\s*(?:confidential|private)?\s*(?:product|business|research)?\s*idea/gi, "a confidential business concept")}.`];
+    }
+    return [requestText];
+  });
+  const genericTasks = [...input.matchAll(genericBusinessTask)].map((match) => match[0]);
+  const privatePart = input.trim();
+  const intent = /\bresearch\b/i.test(input)
+    ? "Help me research and validate"
+    : /\b(?:launch|market|customer|buy)\b/i.test(input)
+      ? "Help me evaluate, validate, and plan"
+      : "Help me evaluate";
+  aliases.push({ token: "[CONFIDENTIAL_ASSET_1]", value: privatePart || input, category: "confidential-asset" });
+  const preservedRequest = [...new Set([...genericTasks, ...safeRequests])].join(" ").trim();
+  const text = `${intent} a confidential business concept represented by [CONFIDENTIAL_ASSET_1] without reconstructing its distinguishing features.${preservedRequest ? ` ${preservedRequest}` : ""}`;
+  return { text, changed: true };
 }
 
 export function analyzePrompt(input: string, mode: "balanced" | "strict" = "balanced"): PrivacyAnalysis {
